@@ -25,7 +25,6 @@ public class Perder extends JFrame implements ActionListener {
 
         button_menu = new JButton("Volver al menu");
         button_menu.setBounds(310,410,200,30);
-        button_menu.setBackground(Color.white);
         button_menu.setForeground(new Color(130,15,15));
         button_menu.setFont(new Font("Calibri",1,18));
         layeredPane.add(button_menu, Integer.valueOf(1));

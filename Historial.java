@@ -3,10 +3,39 @@ import java.awt.*;
 import java.util.Objects;
 
 public class Historial extends JFrame {
+    private Elfo elf_m, elf_f;
+    private Humano human_m, human_f;
+    private Orco orc_m, orc_f;
     private JLabel label_wallpaper, label_titulo, label_footer;
     private JTextPane textPane_resume;
     private JScrollPane scrollPane;
     String user;
+    public static String gameplay = "Se generaron 6 personajes:\n" +
+            "--------Personaje 1 Jugador 1-------\n" +
+            "nombre: Uhov, Tipo : Troll, Apodo:Chanerium , Velocidad: 8, …etc\n" +
+            "…..\n" +
+            "--------Personaje 2 Jugador 1 -------\n" +
+            "nombre: Rand, Tipo : Wizard, Apodo:Trumer , Velocidad: 1, …etc\n" +
+            "…\n" +
+            "\n" +
+            "Chanerium ataca a XXXX y le quita 20 de salud. XXXX queda con 80 de salud.\n" +
+            "XXXX ataca a Chanerium y le quita 12 de saluds. Chanerium queda con 88 de salud.\n" +
+            "Chanerium ataca a XXXX y le quita ….\n" +
+            "….\n" +
+            "Muere XXXX.\n" +
+            "Chanerium gana 10 de salud como premio, quedando con 90 de salud.\n" +
+            "Ronda 2\n" +
+            "Empieza atacando Jugador 2 por perder la ronda 1.\n" +
+            "El sistema eligió al personaje Trumer del jugador 1 y al personaje YYYY del Jugador 2 para\n" +
+            "que se enfrenten en esta ronda.\n" +
+            "YYYY ataca a Trumer y le quita 2 de salud. Trumer queda con 98 de salud\n" +
+            "….\n" +
+            "Ronda X\n" +
+            "…..\n" +
+            "Gana Jugador 2, le quedo/aron vivos los sgtes. personajes:\n" +
+            "…………\n" +
+            "Felicitaciones Jugador 2 , las fuerzas mágicas del universo luz te abrazan!\n" +
+            "Fin.\n";
     public Historial(){
         user = LogIn.user;
         setLayout(null);
@@ -31,7 +60,7 @@ public class Historial extends JFrame {
         layeredPane.add(label_titulo, Integer.valueOf(1));
 
         textPane_resume = new JTextPane();
-        textPane_resume.setText("                                      LOG");
+        textPane_resume.setText(gameplay);
         textPane_resume.setFont(new Font("Arial",1,25));
         textPane_resume.setEnabled(false);
         scrollPane = new JScrollPane(textPane_resume);

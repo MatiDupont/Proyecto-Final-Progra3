@@ -67,7 +67,7 @@ public abstract class Personaje {
         this.armadura = armadura;
     }
 
-    public void setEfectividadDisparo(int efectividadDisparo) {
+    public void setEfectividadDisparo(double efectividadDisparo) {
         this.efectividadDisparo = efectividadDisparo;
     }
 

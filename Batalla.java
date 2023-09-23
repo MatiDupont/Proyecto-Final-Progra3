@@ -1,5 +1,3 @@
-import com.sun.jdi.ObjectReference;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -132,6 +130,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_D1.setFont(new Font("Calibri",1,18));
         button_D1.setEnabled(false);
         layeredPane.add(button_D1, Integer.valueOf(1));
+        button_D1.addActionListener(this);
 
         button_F1 = new JButton("F (+1)");
         button_F1.setBounds(40,310,100,50);
@@ -140,6 +139,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_F1.setFont(new Font("Calibri",1,18));
         button_F1.setEnabled(false);
         layeredPane.add(button_F1, Integer.valueOf(1));
+        button_F1.addActionListener(this);
 
         button_N1 = new JButton("N (+1)");
         button_N1.setBounds(40,390,100,50);
@@ -148,6 +148,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_N1.setFont(new Font("Calibri",1,18));
         button_N1.setEnabled(false);
         layeredPane.add(button_N1, Integer.valueOf(1));
+        button_N1.addActionListener(this);
 
         button_A1 = new JButton("A (+1)");
         button_A1.setBounds(40,470,100,50);
@@ -156,6 +157,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_A1.setFont(new Font("Calibri",1,18));
         button_A1.setEnabled(false);
         layeredPane.add(button_A1, Integer.valueOf(1));
+        button_A1.addActionListener(this);
 
         Random random1 = new Random();
         turno = random1.nextInt(2) + 1;
@@ -213,6 +215,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_V2.setFont(new Font("Calibri",1,18));
         button_V2.setEnabled(false);
         layeredPane.add(button_V2, Integer.valueOf(1));
+        button_V2.addActionListener(this);
 
         button_D2 = new JButton("D (+1)");
         button_D2.setBounds(1130,230,100,50);
@@ -221,6 +224,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_D2.setFont(new Font("Calibri",1,18));
         button_D2.setEnabled(false);
         layeredPane.add(button_D2, Integer.valueOf(1));
+        button_D2.addActionListener(this);
 
         button_F2 = new JButton("F (+1)");
         button_F2.setBounds(1130,310,100,50);
@@ -229,6 +233,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_F2.setFont(new Font("Calibri",1,18));
         button_F2.setEnabled(false);
         layeredPane.add(button_F2, Integer.valueOf(1));
+        button_F2.addActionListener(this);
 
         button_N2 = new JButton("N (+1)");
         button_N2.setBounds(1130,390,100,50);
@@ -237,6 +242,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_N2.setFont(new Font("Calibri",1,18));
         button_N2.setEnabled(false);
         layeredPane.add(button_N2, Integer.valueOf(1));
+        button_N2.addActionListener(this);
 
         button_A2 = new JButton("A (+1)");
         button_A2.setBounds(1130,470,100,50);
@@ -245,6 +251,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_A2.setFont(new Font("Calibri",1,18));
         button_A2.setEnabled(false);
         layeredPane.add(button_A2, Integer.valueOf(1));
+        button_A2.addActionListener(this);
 
         button_attack2 = new JButton("Attack (7)");
         button_attack2.setBounds(930,550,120,40);
@@ -317,7 +324,7 @@ public class Batalla extends JFrame implements ActionListener {
         atacante[0].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
         // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        //JOptionPane.showMessageDialog(null, attack);
+        JOptionPane.showMessageDialog(null, atacante[0].getNombre() + " le quito " + attack + " de salud a " + defensor[0].getNombre());
         defensor[0].setSalud(defensor[0].getSalud() - attack);
     }
 
@@ -336,19 +343,19 @@ public class Batalla extends JFrame implements ActionListener {
         atacante[0].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
         // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        //JOptionPane.showMessageDialog(null, attack);
+        JOptionPane.showMessageDialog(null, atacante[0].getNombre() + " le quito " + attack + " de salud a " + defensor[0].getNombre());
         defensor[0].setSalud(defensor[0].getSalud() - attack);
     }
 
-    public void actionPerformed(ActionEvent e){
-        if (e.getSource() == button_chracter1){
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == button_chracter1) {
             Personaje[] p1 = personajes1(arrCards1);
 
             String chracter1Info = "Nombre: " + p1[0].getNombre() + "\n\n";
             chracter1Info += "           Caracteristicas" + "\n\n";
             chracter1Info += "Apodo: " + p1[0].getApodo() + "\n";
             chracter1Info += "Edad: " + p1[0].getEdad() + "\n";
-            chracter1Info += "Raza:" + p1[0].getRaza() + "\n";
+            chracter1Info += "Raza: " + p1[0].getRaza() + "\n";
             chracter1Info += "Puntos de Vida: " + p1[0].getSalud() + "\n";
             chracter1Info += "Velocidad: " + p1[0].getVelocidad() + "\n";
             chracter1Info += "Destreza: " + p1[0].getDestreza() + "\n";
@@ -365,7 +372,7 @@ public class Batalla extends JFrame implements ActionListener {
             chracter2Info += "           Caracteristicas" + "\n\n";
             chracter2Info += "Apodo: " + p2[0].getApodo() + "\n";
             chracter2Info += "Edad: " + p2[0].getEdad() + "\n";
-            chracter2Info += "Raza:" + p2[0].getRaza() + "\n";
+            chracter2Info += "Raza: " + p2[0].getRaza() + "\n";
             chracter2Info += "Puntos de Vida: " + p2[0].getSalud() + "\n";
             chracter2Info += "Velocidad: " + p2[0].getVelocidad() + "\n";
             chracter2Info += "Destreza: " + p2[0].getDestreza() + "\n";
@@ -386,7 +393,7 @@ public class Batalla extends JFrame implements ActionListener {
             button_N2.setEnabled(false);
             button_A2.setEnabled(false);
         }
-        if (e.getSource() == button_D1 || e.getSource() == button_V1 || e.getSource() == button_F1 || e.getSource() == button_N1 || e.getSource() == button_A1) {
+        if (e.getSource() == button_V1 || e.getSource() == button_D1 || e.getSource() == button_F1 || e.getSource() == button_N1 || e.getSource() == button_A1) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
             JOptionPane.showMessageDialog(null, habilidadSeleccionada);
             modificarHabilidad(personajes1(arrCards1), habilidadSeleccionada);
@@ -399,26 +406,47 @@ public class Batalla extends JFrame implements ActionListener {
 
         if (e.getSource() == button_attack){
             ataqueJugador1(personajes1(arrCards1),personajes2(arrCards2));
-            estadoCarta(personajes2(arrCards2));
-
             total_ataques1 --;
             button_attack.setText("Attack (" + total_ataques1 + ")");
+
+            estadoCarta(personajes2(arrCards2));
+
+            totalAtaques();
             turno = 2;
             button_attack.setEnabled(false);
             button_attack2.setEnabled(true);
+            totalAtaques();
+
+            if (personajes2(arrCards2).length == 0){
+                Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
+                ganar.setVisible(true);
+            }
         }
         if (e.getSource() == button_attack2){
             ataqueJugador2(personajes2(arrCards2),personajes1(arrCards1));
-            estadoCarta(personajes1(arrCards1));
-
             total_ataques2 --;
             button_attack2.setText("Attack (" + total_ataques2 + ")");
+
+            estadoCarta(personajes1(arrCards1));
+
             turno = 1;
             button_attack2.setEnabled(false);
             button_attack.setEnabled(true);
+            totalAtaques();
+
+            if (personajes1(arrCards1).length == 0){
+                Perder perder = new Perder();
+                perder.setVisible(true);
+            }
         }
-            //Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
-            //ganar.setVisible(true);
+    }
+
+    private void totalAtaques(){
+        if ((total_ataques1 == 0) && (total_ataques2 == 0)){
+            button_attack.setEnabled(false);
+            button_attack2.setEnabled(false);
+            label_round.setText("ROUND - " + (round ++) + " -");
+        }
     }
 
     private Personaje[] personajes1(int[] arr1){
@@ -464,9 +492,12 @@ public class Batalla extends JFrame implements ActionListener {
         boolean vivo = true;
         if (personajes[0].getSalud() <= 0){
             vivo = false;
-            JOptionPane.showMessageDialog(null, "El personaje murio.");
+            JOptionPane.showMessageDialog(null, personajes[0].getNombre() + " murio.");
 
             if (elementoEnArreglo(personajes[0], personajes1(arrCards1))){
+                button_chracter2.setBackground(new Color(0,255,0));
+                button_chracter1.setBackground(new Color(255,0,0));
+                button_attack.setEnabled(false);
                 button_V2.setEnabled(true);
                 button_D2.setEnabled(true);
                 button_F2.setEnabled(true);
@@ -474,6 +505,9 @@ public class Batalla extends JFrame implements ActionListener {
                 button_A2.setEnabled(true);
             }
             else if (elementoEnArreglo(personajes[0], personajes2(arrCards2))){
+                button_chracter1.setBackground(new Color(0,255,0));
+                button_chracter2.setBackground(new Color(255,0,0));
+                button_attack2.setEnabled(false);
                 button_V1.setEnabled(true);
                 button_D1.setEnabled(true);
                 button_F1.setEnabled(true);
@@ -495,18 +529,201 @@ public class Batalla extends JFrame implements ActionListener {
 
     private void modificarHabilidad(Personaje[] personajes, String habilidad){
         if (habilidad.equals("Velocidad")) {
-            personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+            if (personajes[0].getVelocidad() == 10){
+                boolean flag = true;
+                while (flag){
+                    int opcion = JOptionPane.showConfirmDialog(null, "Velocidad ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
+                    if (opcion == JOptionPane.YES_OPTION){
+                        String nuevaHabilidad = elegirOtraHabilidad();
+                        switch (nuevaHabilidad){
+                            case "Destreza": {
+                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Fuerza": {
+                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Nivel": {
+                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Armadura": {
+                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                flag = false;
+                                break;
+                            }
+                            default:{
+                                flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                JOptionPane.showMessageDialog(null, "Velocidad aumentada.");
+            }
         } else if (habilidad.equals("Destreza")) {
-            personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+            if (personajes[0].getDestreza() == 5){
+                boolean flag = true;
+                while (flag){
+                    int opcion = JOptionPane.showConfirmDialog(null, "Destreza ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
+                    if (opcion == JOptionPane.YES_OPTION){
+                        String nuevaHabilidad = elegirOtraHabilidad();
+                        switch (nuevaHabilidad){
+                            case "Velocidad": {
+                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Fuerza": {
+                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Nivel": {
+                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Armadura": {
+                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                flag = false;
+                                break;
+                            }
+                            default:{
+                                flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                JOptionPane.showMessageDialog(null, "Destreza aumentada.");
+            }
         } else if (habilidad.equals("Fuerza")) {
-            personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+            if (personajes[0].getFuerza() == 10){
+                boolean flag = true;
+                while (flag){
+                    int opcion = JOptionPane.showConfirmDialog(null, "Fuerza ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
+                    if (opcion == JOptionPane.YES_OPTION){
+                        String nuevaHabilidad = elegirOtraHabilidad();
+                        switch (nuevaHabilidad){
+                            case "Velocidad": {
+                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Destreza": {
+                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Nivel": {
+                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Armadura": {
+                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                flag = false;
+                                break;
+                            }
+                            default:{
+                                flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                JOptionPane.showMessageDialog(null, "Fuerza aumentada.");
+            }
         } else if (habilidad.equals("Nivel")) {
-            personajes[0].setNivel(personajes[0].getNivel() + 1);
+            if (personajes[0].getNivel() == 10){
+                boolean flag = true;
+                while (flag){
+                    int opcion = JOptionPane.showConfirmDialog(null, "Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
+                    if (opcion == JOptionPane.YES_OPTION){
+                        String nuevaHabilidad = elegirOtraHabilidad();
+                        switch (nuevaHabilidad){
+                            case "Velocidad": {
+                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Destreza": {
+                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Fuerza": {
+                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Armadura": {
+                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                flag = false;
+                                break;
+                            }
+                            default:{
+                                flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                JOptionPane.showMessageDialog(null, "Nivel aumentado.");
+            }
         } else if (habilidad.equals("Armadura")) {
-            personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+            if (personajes[0].getArmadura() == 10){
+                boolean flag = true;
+                while (flag){
+                    int opcion = JOptionPane.showConfirmDialog(null, "Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
+                    if (opcion == JOptionPane.YES_OPTION){
+                        String nuevaHabilidad = elegirOtraHabilidad();
+                        switch (nuevaHabilidad){
+                            case "Velocidad": {
+                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Destreza": {
+                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Fuerza": {
+                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                flag = false;
+                                break;
+                            }
+                            case "Nivel": {
+                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                flag = false;
+                                break;
+                            }
+                            default:{
+                                flag = true;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                JOptionPane.showMessageDialog(null, "Armadura aumentada.");
+            }
         }
-
-        JOptionPane.showMessageDialog(null, "Habilidad modificada");
     }
 
     private String getHabilidadDesdeBoton(Object botonPresionado){
@@ -523,6 +740,20 @@ public class Batalla extends JFrame implements ActionListener {
         } else {
             return "";
         }
+    }
+
+    private String elegirOtraHabilidad(){
+        String[] opciones = {"Velocidad", "Destreza", "Fuerza", "Nivel", "Armadura"};
+
+        return (String) JOptionPane.showInputDialog(
+                null,
+                "Elija una habilidad para mejorar",
+                "Habilidad en su maximo nivel",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                opciones,
+                opciones[0]
+        );
     }
 }
 

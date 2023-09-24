@@ -129,12 +129,12 @@ public class EleccionCartas extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e){
         JButton source = (JButton) e.getSource();
         if (source == button_start){
-            Elfo elf_m = new Elfo("Elfo","Thandor","Thor","152",100,7,3,8,10,6);
-            Elfo elf_f = new Elfo("Elfo", "Elionor", "Lion","275",100,9,4,3,7,10);
-            Humano human_m = new Humano("Humano","Kellan", "Storm", "39",100,10,2,6,9,4);
-            Humano human_f = new Humano("Humano","Astrid", "Dri", "22",100,5,5,4,2,8);
-            Orco orc_m = new Orco("Orco", "Grommash", "Hacha de guerra", "280",100,1,2,10,8,9);
-            Orco orc_f = new Orco("Orco", "Maela", "Garra sangrienta","164",100,2,3,7,6,8);
+            Elfo elf_m = new Elfo("Elfo","Thandor","Thor","152",100,7,3,8,10,6, "images\\elf_male.png");
+            Elfo elf_f = new Elfo("Elfo", "Elionor", "Lion","275",100,9,4,3,7,10, "images\\elf_female.png");
+            Humano human_m = new Humano("Humano","Kellan", "Storm", "39",100,10,2,6,9,4, "images\\human_male.png");
+            Humano human_f = new Humano("Humano","Astrid", "Dri", "22",100,5,5,4,2,8, "images\\human_female.png");
+            Orco orc_m = new Orco("Orco", "Grommash", "Hacha de guerra", "280",100,1,2,10,8,9, "images\\orc_male.png");
+            Orco orc_f = new Orco("Orco", "Maela", "Garra sangrienta","164",100,2,3,7,6,8, "images\\orc_female.png");
 
             Batalla batalla = new Batalla(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
             batalla.setVisible(true);

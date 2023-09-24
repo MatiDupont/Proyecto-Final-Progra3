@@ -12,9 +12,9 @@ public class Batalla extends JFrame implements ActionListener {
     private Orco orc_m, orc_f;
     private JLabel label_wallpaper, label_title, label_player1, label_player2, label_round, label_vs, label_footer, label_arrC1, label_arrC2;
     private JButton button_chracter1, button_chracter2, button_attack, button_attack2, button_V1, button_D1, button_F1, button_N1, button_A1, button_V2, button_D2, button_F2, button_N2, button_A2;
-    public static int round = 1, turno, indice = 0, indice2 = 0, newWidth = 270, newHeight = 370;
+    public static int round = 1, turno, newWidth = 270, newHeight = 370;
     public static int[] arrCards1, arrCards2;
-    public static String[] image;
+    public static String[] image, image2;
     private int total_ataques1 = 7, total_ataques2 = 7;
     private String habilidadSeleccionada = "";
     JLayeredPane layeredPane = new JLayeredPane();
@@ -104,7 +104,7 @@ public class Batalla extends JFrame implements ActionListener {
             }
         }
 
-        ImageIcon originalIcon = new ImageIcon(image[indice]);
+        ImageIcon originalIcon = new ImageIcon(image[0]);
         Image originalImage = originalIcon.getImage();
         Image resizedImage = originalImage.getScaledInstance(newWidth,newHeight,Image.SCALE_SMOOTH);
         ImageIcon resizedIcon = new ImageIcon(resizedImage);
@@ -182,23 +182,25 @@ public class Batalla extends JFrame implements ActionListener {
         label_vs.setFont(new Font("Lucida Console",1,70));
         layeredPane.add(label_vs, Integer.valueOf(1));
 
+        image2 = new String[3];
+
         for (int i = 0; i < arrChracter2.length; i++){
             if (arrCards2[i] == 0){
-                image[i] = "images\\elf_female.png";
+                image2[i] = elf_f.getImage();
             } else if (arrCards2[i] == 1) {
-                image[i] = "images\\elf_male.png";
+                image2[i] = elf_m.getImage();
             } else if (arrCards2[i] == 2) {
-                image[i] = "images\\human_male.png";
+                image2[i] = human_m.getImage();
             } else if (arrCards2[i] == 3) {
-                image[i] = "images\\human_female.png";
+                image2[i] = human_f.getImage();
             } else if (arrCards2[i] == 4) {
-                image[i] = "images\\orc_female.png";
+                image2[i] = orc_f.getImage();
             } else if (arrCards2[i] == 5) {
-                image[i] = "images\\orc_male.png";
+                image2[i] = orc_m.getImage();
             }
         }
 
-        ImageIcon originalIcon2 = new ImageIcon(image[indice2]);
+        ImageIcon originalIcon2 = new ImageIcon(image2[0]);
         Image originalImage2 = originalIcon2.getImage();
         Image resizedImage2 = originalImage2.getScaledInstance(newWidth,newHeight,Image.SCALE_SMOOTH);
         ImageIcon resizedIcon2 = new ImageIcon(resizedImage2);
@@ -351,12 +353,24 @@ public class Batalla extends JFrame implements ActionListener {
         if (e.getSource() == button_chracter1) {
             Personaje[] p1 = personajes1(arrCards1);
 
+            if (p1[0].getSalud() <= 0){
+                if (p1[1] != null){
+                    p1[0] = p1[1];
+                    p1[1] = p1[2];
+                    p1[2] = null;
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, "No hay mas personajes en arrCards1.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+            }
+
             String chracter1Info = "Nombre: " + p1[0].getNombre() + "\n\n";
             chracter1Info += "           Caracteristicas" + "\n\n";
             chracter1Info += "Apodo: " + p1[0].getApodo() + "\n";
             chracter1Info += "Edad: " + p1[0].getEdad() + "\n";
             chracter1Info += "Raza: " + p1[0].getRaza() + "\n";
-            chracter1Info += "Puntos de Vida: " + p1[0].getSalud() + "\n";
+            chracter1Info += "Salud: " + p1[0].getSalud() + "\n";
             chracter1Info += "Velocidad: " + p1[0].getVelocidad() + "\n";
             chracter1Info += "Destreza: " + p1[0].getDestreza() + "\n";
             chracter1Info += "Fuerza: " + p1[0].getFuerza() + "\n";
@@ -368,12 +382,25 @@ public class Batalla extends JFrame implements ActionListener {
         }
         if (e.getSource() == button_chracter2) {
             Personaje[] p2 = personajes2(arrCards2);
+
+            if (p2[0].getSalud() <= 0){
+                if (p2[1] != null){
+                    p2[0] = p2[1];
+                    p2[1] = p2[2];
+                    p2[2] = null;
+                }
+                else {
+                    JOptionPane.showMessageDialog(this, "No hay mas personajes en arrcards2.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+            }
+
             String chracter2Info = "Nombre: " + p2[0].getNombre() + "\n\n";
             chracter2Info += "           Caracteristicas" + "\n\n";
             chracter2Info += "Apodo: " + p2[0].getApodo() + "\n";
             chracter2Info += "Edad: " + p2[0].getEdad() + "\n";
             chracter2Info += "Raza: " + p2[0].getRaza() + "\n";
-            chracter2Info += "Puntos de Vida: " + p2[0].getSalud() + "\n";
+            chracter2Info += "Salud: " + p2[0].getSalud() + "\n";
             chracter2Info += "Velocidad: " + p2[0].getVelocidad() + "\n";
             chracter2Info += "Destreza: " + p2[0].getDestreza() + "\n";
             chracter2Info += "Fuerza: " + p2[0].getFuerza() + "\n";
@@ -411,16 +438,14 @@ public class Batalla extends JFrame implements ActionListener {
 
             estadoCarta(personajes2(arrCards2));
 
-            totalAtaques();
+            //totalAtaques();
             turno = 2;
             button_attack.setEnabled(false);
             button_attack2.setEnabled(true);
-            totalAtaques();
+            //  totalAtaques();
 
-            if (personajes2(arrCards2).length == 0){
-                Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
-                ganar.setVisible(true);
-            }
+            //Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
+            //ganar.setVisible(true);
         }
         if (e.getSource() == button_attack2){
             ataqueJugador2(personajes2(arrCards2),personajes1(arrCards1));
@@ -432,12 +457,7 @@ public class Batalla extends JFrame implements ActionListener {
             turno = 1;
             button_attack2.setEnabled(false);
             button_attack.setEnabled(true);
-            totalAtaques();
-
-            if (personajes1(arrCards1).length == 0){
-                Perder perder = new Perder();
-                perder.setVisible(true);
-            }
+            //totalAtaques();
         }
     }
 
@@ -513,6 +533,14 @@ public class Batalla extends JFrame implements ActionListener {
                 button_F1.setEnabled(true);
                 button_N1.setEnabled(true);
                 button_A1.setEnabled(true);
+            }
+            Personaje siguientePersonaje = siguientePersonajeSiUnoMuere(personajes, personajes[0]);
+
+            if (siguientePersonaje != null){
+                personajes[0] = siguientePersonaje;
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "El jugador ha perdido." );
             }
         }
         return vivo;
@@ -724,6 +752,35 @@ public class Batalla extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Armadura aumentada.");
             }
         }
+
+        boolean obj_in_arr = elementoEnArreglo(personajes[0], personajes1(arrCards1));
+
+        if (obj_in_arr){
+            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes2(arrCards2), personajes2(arrCards2)[0]);
+            ImageIcon originalIcon2 = new ImageIcon(siguiente.getImage());
+            Image originalImage2 = originalIcon2.getImage();
+            Image resizedImage2 = originalImage2.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            ImageIcon resizedIcon2 = new ImageIcon(resizedImage2);
+            button_chracter2.setIcon(resizedIcon2);
+            button_chracter2.setBackground(new Color(0,0,0));
+            button_chracter1.setBackground(new Color(0,0,0));
+            total_ataques1 = 7;
+            total_ataques2 = 7;
+            button_attack.setText("Attack (7)");
+            button_attack2.setText("Attack (7)");
+        }
+        else {
+            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes1(arrCards1), personajes1(arrCards1)[0]);
+            ImageIcon originalIcon = new ImageIcon(siguiente.getImage());
+            Image originalImage = originalIcon.getImage();
+            Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            ImageIcon resizedIcon = new ImageIcon(resizedImage);
+            button_chracter1.setIcon(resizedIcon);
+            button_chracter1.setBackground(new Color(0,0,0));
+            button_chracter2.setBackground(new Color(0,0,0));
+            //Perder perder = new Perder();
+            //perder.setVisible(true);
+        }
     }
 
     private String getHabilidadDesdeBoton(Object botonPresionado){
@@ -754,6 +811,17 @@ public class Batalla extends JFrame implements ActionListener {
                 opciones,
                 opciones[0]
         );
+    }
+
+    private Personaje siguientePersonajeSiUnoMuere(Personaje[] personajes, Personaje personajeMuerto){
+        for (int i = 0; i < personajes.length; i++){
+            if (personajes[i] == personajeMuerto){
+                if (i < personajes.length - 1){
+                    return personajes[i + 1];
+                }
+            }
+        }
+        return null;
     }
 }
 

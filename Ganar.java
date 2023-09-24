@@ -48,22 +48,25 @@ public class Ganar extends JFrame implements ActionListener {
 
         for (int i = 0; i < arrChracter1.length; i++){
             if (arrChracter1[i] == 0){
-                image[i] = "images\\elf_female.png";
+                image[i] = elf_f.getImage();
             } else if (arrChracter1[i] == 1) {
-                image[i] = "images\\elf_male.png";
+                image[i] = elf_m.getImage();
             } else if (arrChracter1[i] == 2) {
-                image[i] = "images\\human_male.png";
+                image[i] = human_m.getImage();
             } else if (arrChracter1[i] == 3) {
-                image[i] = "images\\human_female.png";
+                image[i] = human_f.getImage();
             } else if (arrChracter1[i] == 4) {
-                image[i] = "images\\orc_female.png";
+                image[i] = orc_f.getImage();
             } else if (arrChracter1[i] == 5) {
-                image[i] = "images\\orc_male.png";
+                image[i] = orc_m.getImage();
             }
         }
         int newWidth = 270;
         int newHeight = 370;
 
+        Personaje personaje = null;
+
+        personaje = devolverPersonaje(0);
         ImageIcon originalIcon = new ImageIcon(image[0]);
         Image originalImage = originalIcon.getImage();
         Image resizedImage = originalImage.getScaledInstance(newWidth,newHeight,Image.SCALE_SMOOTH);
@@ -73,7 +76,14 @@ public class Ganar extends JFrame implements ActionListener {
         button_card1.setBackground(Color.BLACK);
         layeredPane.add(button_card1, Integer.valueOf(1));
         button_card1.addActionListener(this);
+        if (personaje.getSalud() > 0){
+            button_card1.setBackground(new Color(0,255,0));
+        }
+        else {
+            button_card1.setBackground(new Color(255,0,0));
+        }
 
+        personaje = devolverPersonaje(1);
         ImageIcon originalIcon2 = new ImageIcon(image[1]);
         Image originalImage2 = originalIcon2.getImage();
         Image resizedImage2 = originalImage2.getScaledInstance(newWidth,newHeight,Image.SCALE_SMOOTH);
@@ -83,7 +93,14 @@ public class Ganar extends JFrame implements ActionListener {
         button_card2.setBackground(Color.BLACK);
         layeredPane.add(button_card2, Integer.valueOf(1));
         button_card2.addActionListener(this);
+        if (personaje.getSalud() > 0){
+            button_card2.setBackground(new Color(0,255,0));
+        }
+        else {
+            button_card2.setBackground(new Color(255,0,0));
+        }
 
+        personaje = devolverPersonaje(2);
         ImageIcon originalIcon3 = new ImageIcon(image[2]);
         Image originalImage3 = originalIcon3.getImage();
         Image resizedImage3 = originalImage3.getScaledInstance(newWidth,newHeight,Image.SCALE_SMOOTH);
@@ -93,6 +110,12 @@ public class Ganar extends JFrame implements ActionListener {
         button_card3.setBackground(Color.BLACK);
         layeredPane.add(button_card3, Integer.valueOf(1));
         button_card3.addActionListener(this);
+        if (personaje.getSalud() > 0){
+            button_card3.setBackground(new Color(0,255,0));
+        }
+        else {
+            button_card3.setBackground(new Color(255,0,0));
+        }
 
         button_menu = new JButton("Volver al menu");
         button_menu.setBounds(580,600,200,30);
@@ -130,9 +153,30 @@ public class Ganar extends JFrame implements ActionListener {
             new Inicio().setVisible(true);
         }
     }
-    private void infoMessage(int param){
+    private void infoMessage(int param) {
         Personaje personaje = null;
-        if (arrChracter1[param] == 0){
+
+        personaje = devolverPersonaje(param);
+
+        String chracter1Info = "Nombre: " + personaje.getNombre() + "\n\n";
+        chracter1Info += "           Caracteristicas" + "\n\n";
+        chracter1Info += "Apodo: " + personaje.getApodo() + "\n";
+        chracter1Info += "Edad: " + personaje.getEdad() + "\n";
+        chracter1Info += "Raza: " + personaje.getRaza() + "\n";
+        chracter1Info += "Salud: " + personaje.getSalud() + "\n";
+        chracter1Info += "Velocidad: " + personaje.getVelocidad() + "\n";
+        chracter1Info += "Destreza: " + personaje.getDestreza() + "\n";
+        chracter1Info += "Fuerza: " + personaje.getFuerza() + "\n";
+        chracter1Info += "Nivel: " + personaje.getNivel() + "\n";
+        chracter1Info += "Armadura: " + personaje.getArmadura() + "\n";
+        chracter1Info += "Efectividad de Disparo: " + personaje.getEfectividadDisparo();
+
+        JOptionPane.showMessageDialog(this, chracter1Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private Personaje devolverPersonaje (int param){
+        Personaje personaje = null;
+        if (arrChracter1[param] == 0) {
             personaje = elf_f;
         } else if (arrChracter1[param] == 1) {
             personaje = elf_m;
@@ -145,17 +189,7 @@ public class Ganar extends JFrame implements ActionListener {
         } else if (arrChracter1[param] == 5) {
             personaje = orc_m;
         }
-        String chracter1Info = "Nombre: " + personaje.getNombre() + "\n\n";
-        chracter1Info += "           Caracteristicas" + "\n\n";
-        chracter1Info += "Apodo: " + personaje.getApodo() + "\n";
-        chracter1Info += "Edad: " + personaje.getEdad() + "\n";
-        chracter1Info += "Puntos de Vida: " + personaje.getSalud() + "\n";
-        chracter1Info += "Velocidad: " + personaje.getVelocidad() + "\n";
-        chracter1Info += "Destreza: " + personaje.getDestreza() + "\n";
-        chracter1Info += "Fuerza: " + personaje.getFuerza() + "\n";
-        chracter1Info += "Nivel: " + personaje.getNivel() + "\n";
-        chracter1Info += "Armadura: " + personaje.getArmadura() + "\n";
 
-        JOptionPane.showMessageDialog(this, chracter1Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+        return personaje;
     }
 }

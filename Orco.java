@@ -1,7 +1,7 @@
 public class Orco extends Personaje{
 
-    public Orco(String raza, String nombre, String apodo, String edad, int salud, int velocidad, int destreza, int fuerza, int nivel, int armadura) {
-        super(raza, nombre, apodo, edad, salud, velocidad, destreza, fuerza, nivel, armadura);
+    public Orco(String raza, String nombre, String apodo, String edad, int salud, int velocidad, int destreza, int fuerza, int nivel, int armadura, String image) {
+        super(raza, nombre, apodo, edad, salud, velocidad, destreza, fuerza, nivel, armadura, image);
     }
 
     @Override

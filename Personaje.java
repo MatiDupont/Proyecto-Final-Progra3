@@ -11,9 +11,9 @@ public abstract class Personaje {
     private int nivel;
     private int armadura;
     private double efectividadDisparo;
-
+    private String image;
     Random random = new Random();
-    public Personaje(String raza, String nombre, String apodo, String edad, int salud, int velocidad, int destreza, int fuerza, int nivel, int armadura) {
+    public Personaje(String raza, String nombre, String apodo, String edad, int salud, int velocidad, int destreza, int fuerza, int nivel, int armadura, String image) {
         this.raza = raza;
         this.nombre = nombre;
         this.apodo = apodo;
@@ -25,6 +25,15 @@ public abstract class Personaje {
         this.nivel = nivel;
         this.armadura = armadura;
         this.efectividadDisparo = (random.nextInt(100) + 1 ) / 100.0;
+        this.image = image;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setRaza(String raza) {

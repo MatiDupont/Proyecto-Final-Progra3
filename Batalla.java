@@ -12,7 +12,7 @@ public class Batalla extends JFrame implements ActionListener {
     private Orco orc_m, orc_f;
     private JLabel label_wallpaper, label_title, label_player1, label_player2, label_round, label_vs, label_footer, label_arrC1, label_arrC2;
     private JButton button_chracter1, button_chracter2, button_attack, button_attack2, button_V1, button_D1, button_F1, button_N1, button_A1, button_V2, button_D2, button_F2, button_N2, button_A2;
-    public static int round = 1, turno, newWidth = 270, newHeight = 370;
+    public static int round = 1, turno, newWidth = 270, newHeight = 370,  indicePersonaje1 = 0, indicePersonaje2 = 0;
     public static int[] arrCards1, arrCards2;
     public static String[] image, image2;
     private int total_ataques1 = 7, total_ataques2 = 7;
@@ -315,100 +315,82 @@ public class Batalla extends JFrame implements ActionListener {
         int attack = 0;
         Random random = new Random();
 
-        if (atacante[0] instanceof Elfo){
-            attack =  Math.abs((int) (((((((Elfo)atacante[0]).valorAtaque() * ((Elfo)atacante[0]).getEfectividadDisparo()) - defensor[0].poderDefensa()) / 500) * 100) * 1.05));
-        } else if (atacante[0] instanceof Humano){
-            attack = Math.abs((int) ((((((Humano)atacante[0]).valorAtaque() * ((Humano)atacante[0]).getEfectividadDisparo()) - defensor[0].poderDefensa()) / 500) * 100));
-        } else if (atacante[0] instanceof Orco) {
-            attack = Math.abs((int) (((((((Orco)atacante[0]).valorAtaque() * ((Orco)atacante[0]).getEfectividadDisparo()) - defensor[0].poderDefensa()) / 500) * 100) * 1.1));
+        /*if (atacante[0].getSalud() <= 0){
+            atacante[0] = siguientePersonaje1(atacante, atacante[0]);
+        }
+        if (defensor[0].getSalud() <= 0){
+            defensor[0] = siguientePersonaje2(defensor, defensor[0]);
+        }*/
+
+        if (atacante[indicePersonaje1] instanceof Elfo){
+            attack =  Math.abs((int) (((((((Elfo)atacante[indicePersonaje1]).valorAtaque() * ((Elfo)atacante[indicePersonaje1]).getEfectividadDisparo()) - defensor[indicePersonaje2].poderDefensa()) / 500) * 100) * 1.05));
+        } else if (atacante[indicePersonaje1] instanceof Humano){
+            attack = Math.abs((int) ((((((Humano)atacante[indicePersonaje1]).valorAtaque() * ((Humano)atacante[indicePersonaje1]).getEfectividadDisparo()) - defensor[indicePersonaje2].poderDefensa()) / 500) * 100));
+        } else if (atacante[indicePersonaje1] instanceof Orco) {
+            attack = Math.abs((int) (((((((Orco)atacante[indicePersonaje1]).valorAtaque() * ((Orco)atacante[indicePersonaje1]).getEfectividadDisparo()) - defensor[indicePersonaje2].poderDefensa()) / 500) * 100) * 1.1));
         }
 
-        atacante[0].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
+        atacante[indicePersonaje1].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
         // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        JOptionPane.showMessageDialog(null, atacante[0].getNombre() + " le quito " + attack + " de salud a " + defensor[0].getNombre());
-        defensor[0].setSalud(defensor[0].getSalud() - attack);
+        JOptionPane.showMessageDialog(null, atacante[indicePersonaje1].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje2].getNombre());
+        defensor[indicePersonaje2].setSalud(defensor[indicePersonaje2].getSalud() - attack);
     }
 
     private void ataqueJugador2(Personaje[] atacante, Personaje[] defensor){
         int attack = 0;
         Random random = new Random();
 
-        if (atacante[0] instanceof Elfo){
-            attack =  Math.abs((int) (((((((Elfo)atacante[0]).valorAtaque() * ((Elfo)atacante[0]).getEfectividadDisparo()) - defensor[0].poderDefensa()) / 500) * 100) * 1.05));
-        } else if (atacante[0] instanceof Humano){
-            attack = Math.abs((int) ((((((Humano)atacante[0]).valorAtaque() * ((Humano)atacante[0]).getEfectividadDisparo()) - defensor[0].poderDefensa()) / 500) * 100));
-        } else if (atacante[0] instanceof Orco) {
-            attack = Math.abs((int) (((((((Orco)atacante[0]).valorAtaque() * ((Orco)atacante[0]).getEfectividadDisparo()) - defensor[0].poderDefensa()) / 500) * 100) * 1.1));
+        /*if (atacante[0].getSalud() <= 0){
+            atacante[0] = siguientePersonaje2(atacante, atacante[0]);
+        }
+        if (defensor[0].getSalud() <= 0){
+            defensor[0] = siguientePersonaje1(defensor, defensor[0]);
+        }*/
+
+        if (atacante[indicePersonaje2] instanceof Elfo){
+            attack =  Math.abs((int) (((((((Elfo)atacante[indicePersonaje2]).valorAtaque() * ((Elfo)atacante[indicePersonaje2]).getEfectividadDisparo()) - defensor[indicePersonaje1].poderDefensa()) / 500) * 100) * 1.05));
+        } else if (atacante[indicePersonaje2] instanceof Humano){
+            attack = Math.abs((int) ((((((Humano)atacante[indicePersonaje2]).valorAtaque() * ((Humano)atacante[indicePersonaje2]).getEfectividadDisparo()) - defensor[indicePersonaje1].poderDefensa()) / 500) * 100));
+        } else if (atacante[indicePersonaje2] instanceof Orco) {
+            attack = Math.abs((int) (((((((Orco)atacante[indicePersonaje2]).valorAtaque() * ((Orco)atacante[indicePersonaje2]).getEfectividadDisparo()) - defensor[indicePersonaje1].poderDefensa()) / 500) * 100) * 1.1));
         }
 
-        atacante[0].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
+        atacante[indicePersonaje2].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
         // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        JOptionPane.showMessageDialog(null, atacante[0].getNombre() + " le quito " + attack + " de salud a " + defensor[0].getNombre());
-        defensor[0].setSalud(defensor[0].getSalud() - attack);
+        JOptionPane.showMessageDialog(null, atacante[indicePersonaje2].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje1].getNombre());
+        defensor[indicePersonaje1].setSalud(defensor[indicePersonaje1].getSalud() - attack);
     }
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button_chracter1) {
-            Personaje[] p1 = personajes1(arrCards1);
+            infoChracter1(indicePersonaje1);
 
-            if (p1[0].getSalud() <= 0){
-                if (p1[1] != null){
+            /*if (p1[0].getSalud() <= 0) {
+                if (p1[1] != null) {
                     p1[0] = p1[1];
                     p1[1] = p1[2];
                     p1[2] = null;
-                }
-                else {
+                } else {
                     JOptionPane.showMessageDialog(this, "No hay mas personajes en arrCards1.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-            }
-
-            String chracter1Info = "Nombre: " + p1[0].getNombre() + "\n\n";
-            chracter1Info += "           Caracteristicas" + "\n\n";
-            chracter1Info += "Apodo: " + p1[0].getApodo() + "\n";
-            chracter1Info += "Edad: " + p1[0].getEdad() + "\n";
-            chracter1Info += "Raza: " + p1[0].getRaza() + "\n";
-            chracter1Info += "Salud: " + p1[0].getSalud() + "\n";
-            chracter1Info += "Velocidad: " + p1[0].getVelocidad() + "\n";
-            chracter1Info += "Destreza: " + p1[0].getDestreza() + "\n";
-            chracter1Info += "Fuerza: " + p1[0].getFuerza() + "\n";
-            chracter1Info += "Nivel: " + p1[0].getNivel() + "\n";
-            chracter1Info += "Armadura: " + p1[0].getArmadura() + "\n";
-            chracter1Info += "Efectividad de Disparo: " + p1[0].getEfectividadDisparo();
-
-            JOptionPane.showMessageDialog(this, chracter1Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+            }*/
         }
         if (e.getSource() == button_chracter2) {
-            Personaje[] p2 = personajes2(arrCards2);
+            infoChracter2(indicePersonaje2);
 
-            if (p2[0].getSalud() <= 0){
-                if (p2[1] != null){
+            /*if (p2[0].getSalud() <= 0) {
+                if (p2[1] != null) {
                     p2[0] = p2[1];
                     p2[1] = p2[2];
                     p2[2] = null;
-                }
-                else {
+                } else {
                     JOptionPane.showMessageDialog(this, "No hay mas personajes en arrcards2.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-            }
-
-            String chracter2Info = "Nombre: " + p2[0].getNombre() + "\n\n";
-            chracter2Info += "           Caracteristicas" + "\n\n";
-            chracter2Info += "Apodo: " + p2[0].getApodo() + "\n";
-            chracter2Info += "Edad: " + p2[0].getEdad() + "\n";
-            chracter2Info += "Raza: " + p2[0].getRaza() + "\n";
-            chracter2Info += "Salud: " + p2[0].getSalud() + "\n";
-            chracter2Info += "Velocidad: " + p2[0].getVelocidad() + "\n";
-            chracter2Info += "Destreza: " + p2[0].getDestreza() + "\n";
-            chracter2Info += "Fuerza: " + p2[0].getFuerza() + "\n";
-            chracter2Info += "Nivel: " + p2[0].getNivel() + "\n";
-            chracter2Info += "Armadura: " + p2[0].getArmadura() + "\n";
-            chracter2Info += "Efectividad de Disparo: " + p2[0].getEfectividadDisparo();
-
-            JOptionPane.showMessageDialog(this, chracter2Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+            }*/
         }
         if (e.getSource() == button_V2 || e.getSource() == button_D2 || e.getSource() == button_F2 || e.getSource() == button_N2 || e.getSource() == button_A2) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
@@ -436,13 +418,18 @@ public class Batalla extends JFrame implements ActionListener {
             total_ataques1 --;
             button_attack.setText("Attack (" + total_ataques1 + ")");
 
-            estadoCarta(personajes2(arrCards2));
+            boolean estado = estadoCarta(personajes2(arrCards2),indicePersonaje2);
 
+            if (!estado){
+                button_attack.setEnabled(false);
+                button_attack2.setEnabled(false);
+            }
+            else {
+                turno = 2;
+                button_attack.setEnabled(false);
+                button_attack2.setEnabled(true);
+            }
             //totalAtaques();
-            turno = 2;
-            button_attack.setEnabled(false);
-            button_attack2.setEnabled(true);
-            //  totalAtaques();
 
             //Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
             //ganar.setVisible(true);
@@ -452,19 +439,25 @@ public class Batalla extends JFrame implements ActionListener {
             total_ataques2 --;
             button_attack2.setText("Attack (" + total_ataques2 + ")");
 
-            estadoCarta(personajes1(arrCards1));
+            boolean estado = estadoCarta(personajes1(arrCards1),indicePersonaje1);
 
-            turno = 1;
-            button_attack2.setEnabled(false);
-            button_attack.setEnabled(true);
+            if (!estado){
+                button_attack2.setEnabled(false);
+                button_attack.setEnabled(false);
+            }
+            else {
+                turno = 1;
+                button_attack2.setEnabled(false);
+                button_attack.setEnabled(true);
+            }
             //totalAtaques();
         }
     }
 
     private void totalAtaques(){
         if ((total_ataques1 == 0) && (total_ataques2 == 0)){
-            button_attack.setEnabled(false);
-            button_attack2.setEnabled(false);
+            //button_attack.setEnabled(false);
+            //button_attack2.setEnabled(false);
             label_round.setText("ROUND - " + (round ++) + " -");
         }
     }
@@ -508,40 +501,44 @@ public class Batalla extends JFrame implements ActionListener {
         return personajes2;
     }
 
-    private boolean estadoCarta(Personaje[] personajes){
+    private boolean estadoCarta(Personaje[] personajes, int indicePersonaje){
         boolean vivo = true;
-        if (personajes[0].getSalud() <= 0){
+        if (personajes[indicePersonaje].getSalud() <= 0){
             vivo = false;
-            JOptionPane.showMessageDialog(null, personajes[0].getNombre() + " murio.");
+            JOptionPane.showMessageDialog(null, personajes[indicePersonaje].getNombre() + " murio.");
 
-            if (elementoEnArreglo(personajes[0], personajes1(arrCards1))){
+            //Personaje siguientePersonaje = null;
+            if (elementoEnArreglo(personajes[indicePersonaje], personajes1(arrCards1))){
                 button_chracter2.setBackground(new Color(0,255,0));
                 button_chracter1.setBackground(new Color(255,0,0));
-                button_attack.setEnabled(false);
                 button_V2.setEnabled(true);
                 button_D2.setEnabled(true);
                 button_F2.setEnabled(true);
                 button_N2.setEnabled(true);
                 button_A2.setEnabled(true);
+
+                //siguientePersonaje = actualizarSiguientePersonaje(personajes1(arrCards1));
             }
-            else if (elementoEnArreglo(personajes[0], personajes2(arrCards2))){
+            else if (elementoEnArreglo(personajes[indicePersonaje], personajes2(arrCards2))){
                 button_chracter1.setBackground(new Color(0,255,0));
                 button_chracter2.setBackground(new Color(255,0,0));
-                button_attack2.setEnabled(false);
                 button_V1.setEnabled(true);
                 button_D1.setEnabled(true);
                 button_F1.setEnabled(true);
                 button_N1.setEnabled(true);
                 button_A1.setEnabled(true);
-            }
-            Personaje siguientePersonaje = siguientePersonajeSiUnoMuere(personajes, personajes[0]);
 
-            if (siguientePersonaje != null){
+                //siguientePersonaje = actualizarSiguientePersonaje(personajes2(arrCards2));
+            }
+
+            //personajes[0] = siguientePersonaje;
+           /* if (siguientePersonaje != null){
                 personajes[0] = siguientePersonaje;
+                JOptionPane.showMessageDialog(null, "Cambio de personaje " + personajes[0].getNombre());
             }
             else {
                 JOptionPane.showMessageDialog(null, "El jugador ha perdido." );
-            }
+            }*/
         }
         return vivo;
     }
@@ -756,7 +753,7 @@ public class Batalla extends JFrame implements ActionListener {
         boolean obj_in_arr = elementoEnArreglo(personajes[0], personajes1(arrCards1));
 
         if (obj_in_arr){
-            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes2(arrCards2), personajes2(arrCards2)[0]);
+            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
             ImageIcon originalIcon2 = new ImageIcon(siguiente.getImage());
             Image originalImage2 = originalIcon2.getImage();
             Image resizedImage2 = originalImage2.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -764,13 +761,15 @@ public class Batalla extends JFrame implements ActionListener {
             button_chracter2.setIcon(resizedIcon2);
             button_chracter2.setBackground(new Color(0,0,0));
             button_chracter1.setBackground(new Color(0,0,0));
+            button_attack2.setEnabled(true);
             total_ataques1 = 7;
             total_ataques2 = 7;
             button_attack.setText("Attack (7)");
             button_attack2.setText("Attack (7)");
+            indicePersonaje2 += 1;
         }
         else {
-            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes1(arrCards1), personajes1(arrCards1)[0]);
+            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
             ImageIcon originalIcon = new ImageIcon(siguiente.getImage());
             Image originalImage = originalIcon.getImage();
             Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
@@ -778,9 +777,16 @@ public class Batalla extends JFrame implements ActionListener {
             button_chracter1.setIcon(resizedIcon);
             button_chracter1.setBackground(new Color(0,0,0));
             button_chracter2.setBackground(new Color(0,0,0));
+            button_attack.setEnabled(true);
+            total_ataques1 = 7;
+            total_ataques2 = 7;
+            button_attack.setText("Attack (7)");
+            button_attack2.setText("Attack (7)");
+            indicePersonaje1 += 1;
             //Perder perder = new Perder();
             //perder.setVisible(true);
         }
+        label_round.setText("ROUND - " + (round += 1) + " -");
     }
 
     private String getHabilidadDesdeBoton(Object botonPresionado){
@@ -822,6 +828,88 @@ public class Batalla extends JFrame implements ActionListener {
             }
         }
         return null;
+    }
+
+    private Personaje siguientePersonaje1(Personaje[] personajes, Personaje personaje1){
+        for (int i = 0; i < personajes.length; i++){
+            if (personajes[i] == personaje1){
+                if (i < personajes.length - 1){
+                    return personajes[i + 1];
+                }
+            }
+        }
+        return null;
+    }
+
+    private Personaje siguientePersonaje2(Personaje[] personajes, Personaje personaje2){
+        for (int i = 0; i < personajes.length; i++){
+            if (personajes[i] == personaje2){
+                if (i < personajes.length - 1){
+                    return personajes[i + 1];
+                }
+            }
+        }
+        return null;
+    }
+
+    /*private Personaje actualizarSiguientePersonaje(Personaje[] personajes){
+        int indiceActual = -1;
+
+        for (int i = 0; i < personajes.length; i++){
+            if (personajes[i].getSalud() <= 0){
+                indiceActual = i;
+                break;
+            }
+        }
+
+        if (indiceActual != -1 && indiceActual < personajes.length - 1){
+            personajes[indiceActual] = personajes[indiceActual + 1];
+            personajes[indiceActual + 1] = siguientePersonajeSiUnoMuere(personajes, personajes[indiceActual]);
+        }
+        else{
+            JOptionPane.showMessageDialog(null, "El jugador ha perdido.");
+        }
+
+        return personajes[indiceActual];
+    }*/
+
+    private void infoChracter1(int indice){
+        Personaje[] p1 = personajes1(arrCards1);
+
+        String chracter1Info = "Nombre: " + p1[indice].getNombre() + "\n\n";
+        chracter1Info += "           Caracteristicas" + "\n\n";
+        chracter1Info += "Apodo: " + p1[indice].getApodo() + "\n";
+        chracter1Info += "Edad: " + p1[indice].getEdad() + "\n";
+        chracter1Info += "Raza: " + p1[indice].getRaza() + "\n";
+        chracter1Info += "Salud: " + p1[indice].getSalud() + "\n";
+        chracter1Info += "Velocidad: " + p1[indice].getVelocidad() + "\n";
+        chracter1Info += "Destreza: " + p1[indice].getDestreza() + "\n";
+        chracter1Info += "Fuerza: " + p1[indice].getFuerza() + "\n";
+        chracter1Info += "Nivel: " + p1[indice].getNivel() + "\n";
+        chracter1Info += "Armadura: " + p1[indice].getArmadura() + "\n";
+        chracter1Info += "Efectividad de Disparo: " + p1[indice].getEfectividadDisparo();
+
+        JOptionPane.showMessageDialog(this, chracter1Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void infoChracter2(int indice){
+        Personaje[] p2 = personajes2(arrCards2);
+
+        String chracter2Info = "Nombre: " + p2[indice].getNombre() + "\n\n";
+        chracter2Info += "           Caracteristicas" + "\n\n";
+        chracter2Info += "Apodo: " + p2[indice].getApodo() + "\n";
+        chracter2Info += "Edad: " + p2[indice].getEdad() + "\n";
+        chracter2Info += "Raza: " + p2[indice].getRaza() + "\n";
+        chracter2Info += "Salud: " + p2[indice].getSalud() + "\n";
+        chracter2Info += "Velocidad: " + p2[indice].getVelocidad() + "\n";
+        chracter2Info += "Destreza: " + p2[indice].getDestreza() + "\n";
+        chracter2Info += "Fuerza: " + p2[indice].getFuerza() + "\n";
+        chracter2Info += "Nivel: " + p2[indice].getNivel() + "\n";
+        chracter2Info += "Armadura: " + p2[indice].getArmadura() + "\n";
+        chracter2Info += "Efectividad de Disparo: " + p2[indice].getEfectividadDisparo();
+
+        JOptionPane.showMessageDialog(this, chracter2Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+
     }
 }
 

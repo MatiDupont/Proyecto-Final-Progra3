@@ -118,7 +118,7 @@ public class Ganar extends JFrame implements ActionListener {
         }
 
         button_menu = new JButton("Volver al menu");
-        button_menu.setBounds(580,600,200,30);
+        button_menu.setBounds(560,600,200,30);
         button_menu.setBackground(Color.white);
         button_menu.setForeground(new Color(130,15,15));
         button_menu.setFont(new Font("Calibri",1,18));
@@ -126,7 +126,7 @@ public class Ganar extends JFrame implements ActionListener {
         button_menu.addActionListener(this);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
-        label_footer.setBounds(600,650,210,20);
+        label_footer.setBounds(590,650,210,20);
         label_footer.setForeground(Color.white);
         layeredPane.add(label_footer, Integer.valueOf(1));
 

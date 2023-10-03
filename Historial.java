@@ -1,11 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Historial extends JFrame {
-    private Elfo elf_m, elf_f;
-    private Humano human_m, human_f;
-    private Orco orc_m, orc_f;
     private JLabel label_wallpaper, label_titulo, label_footer;
     private JTextPane textPane_resume;
     private JScrollPane scrollPane;

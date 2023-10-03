@@ -15,7 +15,7 @@ public class Batalla extends JFrame implements ActionListener {
     public static int round = 1, turno, newWidth = 270, newHeight = 370,  indicePersonaje1 = 0, indicePersonaje2 = 0;
     public static int[] arrCards1, arrCards2;
     public static String[] image, image2;
-    private int total_ataques1 = 7, total_ataques2 = 7;
+    private int total_ataques1 = 0, total_ataques2 = 0;
     private String habilidadSeleccionada = "";
     JLayeredPane layeredPane = new JLayeredPane();
     public Batalla(Elfo elfo1, Elfo elfo2, Humano humano1, Humano humano2, Orco orco1, Orco orco2){
@@ -162,7 +162,7 @@ public class Batalla extends JFrame implements ActionListener {
         Random random1 = new Random();
         turno = random1.nextInt(2) + 1;
 
-        button_attack = new JButton("Attack (7)");
+        button_attack = new JButton("Attack");
         button_attack.setBounds(225,550,120,40);
         button_attack.setBackground(Color.white);
         button_attack.setForeground(new Color(135,15,15));
@@ -255,7 +255,7 @@ public class Batalla extends JFrame implements ActionListener {
         layeredPane.add(button_A2, Integer.valueOf(1));
         button_A2.addActionListener(this);
 
-        button_attack2 = new JButton("Attack (7)");
+        button_attack2 = new JButton("Attack");
         button_attack2.setBounds(930,550,120,40);
         button_attack2.setBackground(Color.white);
         button_attack2.setForeground(new Color(135,15,15));
@@ -312,6 +312,7 @@ public class Batalla extends JFrame implements ActionListener {
     }
 
     private void ataqueJugador1(Personaje[] atacante, Personaje[] defensor){
+        total_ataques1 ++;
         int attack = 0;
         Random random = new Random();
 
@@ -333,11 +334,12 @@ public class Batalla extends JFrame implements ActionListener {
         atacante[indicePersonaje1].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
         // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        JOptionPane.showMessageDialog(null, atacante[indicePersonaje1].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje2].getNombre());
+        JOptionPane.showMessageDialog(null,"Ataque N° " + total_ataques1 + " del jugador 1.\n" + atacante[indicePersonaje1].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje2].getNombre());
         defensor[indicePersonaje2].setSalud(defensor[indicePersonaje2].getSalud() - attack);
     }
 
     private void ataqueJugador2(Personaje[] atacante, Personaje[] defensor){
+        total_ataques2 ++;
         int attack = 0;
         Random random = new Random();
 
@@ -359,7 +361,7 @@ public class Batalla extends JFrame implements ActionListener {
         atacante[indicePersonaje2].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
         // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        JOptionPane.showMessageDialog(null, atacante[indicePersonaje2].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje1].getNombre());
+        JOptionPane.showMessageDialog(null, "Ataque N° " + total_ataques2 + " del jugador 2.\n" + atacante[indicePersonaje2].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje1].getNombre());
         defensor[indicePersonaje1].setSalud(defensor[indicePersonaje1].getSalud() - attack);
     }
 
@@ -395,28 +397,30 @@ public class Batalla extends JFrame implements ActionListener {
         if (e.getSource() == button_V2 || e.getSource() == button_D2 || e.getSource() == button_F2 || e.getSource() == button_N2 || e.getSource() == button_A2) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
             JOptionPane.showMessageDialog(null, habilidadSeleccionada);
-            modificarHabilidad(personajes2(arrCards2), habilidadSeleccionada);
+            modificarHabilidad(personajes2(arrCards2), indicePersonaje2, habilidadSeleccionada);
             button_V2.setEnabled(false);
             button_D2.setEnabled(false);
             button_F2.setEnabled(false);
             button_N2.setEnabled(false);
             button_A2.setEnabled(false);
+
+            //personajeVivosJ1(personajes1(arrCards1));
         }
         if (e.getSource() == button_V1 || e.getSource() == button_D1 || e.getSource() == button_F1 || e.getSource() == button_N1 || e.getSource() == button_A1) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
             JOptionPane.showMessageDialog(null, habilidadSeleccionada);
-            modificarHabilidad(personajes1(arrCards1), habilidadSeleccionada);
+            modificarHabilidad(personajes1(arrCards1), indicePersonaje1, habilidadSeleccionada);
             button_V1.setEnabled(false);
             button_D1.setEnabled(false);
             button_F1.setEnabled(false);
             button_N1.setEnabled(false);
             button_A1.setEnabled(false);
+
+            //personajeVivosJ2(personajes2(arrCards2));
         }
 
         if (e.getSource() == button_attack){
             ataqueJugador1(personajes1(arrCards1),personajes2(arrCards2));
-            total_ataques1 --;
-            button_attack.setText("Attack (" + total_ataques1 + ")");
 
             boolean estado = estadoCarta(personajes2(arrCards2),indicePersonaje2);
 
@@ -429,15 +433,9 @@ public class Batalla extends JFrame implements ActionListener {
                 button_attack.setEnabled(false);
                 button_attack2.setEnabled(true);
             }
-            //totalAtaques();
-
-            //Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
-            //ganar.setVisible(true);
         }
         if (e.getSource() == button_attack2){
             ataqueJugador2(personajes2(arrCards2),personajes1(arrCards1));
-            total_ataques2 --;
-            button_attack2.setText("Attack (" + total_ataques2 + ")");
 
             boolean estado = estadoCarta(personajes1(arrCards1),indicePersonaje1);
 
@@ -450,56 +448,45 @@ public class Batalla extends JFrame implements ActionListener {
                 button_attack2.setEnabled(false);
                 button_attack.setEnabled(true);
             }
-            //totalAtaques();
         }
     }
 
-    private void totalAtaques(){
+    /*private void totalAtaques(){
         if ((total_ataques1 == 0) && (total_ataques2 == 0)){
-            //button_attack.setEnabled(false);
-            //button_attack2.setEnabled(false);
-            label_round.setText("ROUND - " + (round ++) + " -");
-        }
-    }
+            label_round.setText("ROUND - " + (round += 1) + " -");
 
-    private Personaje[] personajes1(int[] arr1){
-        Personaje[] personajes1 = new Personaje[3];
-        for (int i = 0; i < arr1.length; i++){
-            if (arr1[i] == 0){
-                personajes1[i] = elf_f;
-            } else if (arr1[i] == 1) {
-                personajes1[i] = elf_m;
-            } else if (arr1[i] == 2) {
-                personajes1[i] = human_m;
-            } else if (arr1[i] == 3) {
-                personajes1[i] = human_f;
-            } else if (arr1[i] == 4) {
-                personajes1[i] = orc_f;
-            } else if (arr1[i] == 5) {
-                personajes1[i] = orc_m;
+            Personaje personajeActual1 = personajes1(arrCards1)[indicePersonaje1];
+            Personaje siguienteP1 = siguientePersonaje1(personajes1(arrCards1), personajeActual1);
+            if (siguienteP1 != null){
+                personajeActual1 = siguienteP1;
+                indicePersonaje1 += 1;
             }
-        }
-        return personajes1;
-    }
-    private Personaje[] personajes2(int[] arr2){
-        Personaje[] personajes2 = new Personaje[3];
-        for (int i = 0; i < arr2.length; i++) {
-            if (arr2[i] == 0) {
-                personajes2[i] = elf_f;
-            } else if (arr2[i] == 1) {
-                personajes2[i] = elf_m;
-            } else if (arr2[i] == 2) {
-                personajes2[i] = human_m;
-            } else if (arr2[i] == 3) {
-                personajes2[i] = human_f;
-            } else if (arr2[i] == 4) {
-                personajes2[i] = orc_f;
-            } else if (arr2[i] == 5) {
-                personajes2[i] = orc_m;
+            ImageIcon originalIcon = new ImageIcon(personajeActual1.getImage());
+            Image originalImage = originalIcon.getImage();
+            Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            ImageIcon resizedIcon = new ImageIcon(resizedImage);
+            button_chracter1.setIcon(resizedIcon);
+            total_ataques1 = 7;
+            button_attack.setText("Attack (7)");
+
+            Personaje personajeActual2 = personajes2(arrCards2)[indicePersonaje2];
+            Personaje siguienteP2 = siguientePersonaje2(personajes2(arrCards2), personajeActual2);
+            if (siguienteP2 != null){
+                personajeActual2 = siguienteP2;
+                indicePersonaje2 += 1;
             }
+            ImageIcon originalIcon2 = new ImageIcon(personajeActual2.getImage());
+            Image originalImage2 = originalIcon2.getImage();
+            Image resizedImage2 = originalImage2.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+            ImageIcon resizedIcon2 = new ImageIcon(resizedImage2);
+            button_chracter2.setIcon(resizedIcon2);
+            total_ataques2 = 7;
+            button_attack2.setText("Attack (7)");
+
+            button_chracter1.setBackground(new Color(0,0,0));
+            button_chracter2.setBackground(new Color(0,0,0));
         }
-        return personajes2;
-    }
+    }*/
 
     private boolean estadoCarta(Personaje[] personajes, int indicePersonaje){
         boolean vivo = true;
@@ -552,9 +539,9 @@ public class Batalla extends JFrame implements ActionListener {
         return false;
     }
 
-    private void modificarHabilidad(Personaje[] personajes, String habilidad){
+    private void modificarHabilidad(Personaje[] personajes, int indice, String habilidad){
         if (habilidad.equals("Velocidad")) {
-            if (personajes[0].getVelocidad() == 10){
+            if (personajes[indice].getVelocidad() == 10){
                 boolean flag = true;
                 while (flag){
                     int opcion = JOptionPane.showConfirmDialog(null, "Velocidad ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
@@ -562,22 +549,22 @@ public class Batalla extends JFrame implements ActionListener {
                         String nuevaHabilidad = elegirOtraHabilidad();
                         switch (nuevaHabilidad){
                             case "Destreza": {
-                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Fuerza": {
-                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Nivel": {
-                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Armadura": {
-                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
                                 break;
                             }
@@ -589,11 +576,11 @@ public class Batalla extends JFrame implements ActionListener {
                 }
             }
             else {
-                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                 JOptionPane.showMessageDialog(null, "Velocidad aumentada.");
             }
         } else if (habilidad.equals("Destreza")) {
-            if (personajes[0].getDestreza() == 5){
+            if (personajes[indice].getDestreza() == 5){
                 boolean flag = true;
                 while (flag){
                     int opcion = JOptionPane.showConfirmDialog(null, "Destreza ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
@@ -601,22 +588,22 @@ public class Batalla extends JFrame implements ActionListener {
                         String nuevaHabilidad = elegirOtraHabilidad();
                         switch (nuevaHabilidad){
                             case "Velocidad": {
-                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Fuerza": {
-                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Nivel": {
-                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Armadura": {
-                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
                                 break;
                             }
@@ -628,11 +615,11 @@ public class Batalla extends JFrame implements ActionListener {
                 }
             }
             else {
-                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                 JOptionPane.showMessageDialog(null, "Destreza aumentada.");
             }
         } else if (habilidad.equals("Fuerza")) {
-            if (personajes[0].getFuerza() == 10){
+            if (personajes[indice].getFuerza() == 10){
                 boolean flag = true;
                 while (flag){
                     int opcion = JOptionPane.showConfirmDialog(null, "Fuerza ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
@@ -640,22 +627,22 @@ public class Batalla extends JFrame implements ActionListener {
                         String nuevaHabilidad = elegirOtraHabilidad();
                         switch (nuevaHabilidad){
                             case "Velocidad": {
-                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Destreza": {
-                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Nivel": {
-                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Armadura": {
-                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
                                 break;
                             }
@@ -667,11 +654,11 @@ public class Batalla extends JFrame implements ActionListener {
                 }
             }
             else {
-                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                 JOptionPane.showMessageDialog(null, "Fuerza aumentada.");
             }
         } else if (habilidad.equals("Nivel")) {
-            if (personajes[0].getNivel() == 10){
+            if (personajes[indice].getNivel() == 10){
                 boolean flag = true;
                 while (flag){
                     int opcion = JOptionPane.showConfirmDialog(null, "Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
@@ -679,22 +666,22 @@ public class Batalla extends JFrame implements ActionListener {
                         String nuevaHabilidad = elegirOtraHabilidad();
                         switch (nuevaHabilidad){
                             case "Velocidad": {
-                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Destreza": {
-                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Fuerza": {
-                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Armadura": {
-                                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                                personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
                                 break;
                             }
@@ -706,11 +693,11 @@ public class Batalla extends JFrame implements ActionListener {
                 }
             }
             else {
-                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                 JOptionPane.showMessageDialog(null, "Nivel aumentado.");
             }
         } else if (habilidad.equals("Armadura")) {
-            if (personajes[0].getArmadura() == 10){
+            if (personajes[indice].getArmadura() == 10){
                 boolean flag = true;
                 while (flag){
                     int opcion = JOptionPane.showConfirmDialog(null, "Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
@@ -718,22 +705,22 @@ public class Batalla extends JFrame implements ActionListener {
                         String nuevaHabilidad = elegirOtraHabilidad();
                         switch (nuevaHabilidad){
                             case "Velocidad": {
-                                personajes[0].setVelocidad(personajes[0].getVelocidad() + 1);
+                                personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Destreza": {
-                                personajes[0].setDestreza(personajes[0].getDestreza() + 1);
+                                personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Fuerza": {
-                                personajes[0].setFuerza(personajes[0].getFuerza() + 1);
+                                personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
                                 break;
                             }
                             case "Nivel": {
-                                personajes[0].setNivel(personajes[0].getNivel() + 1);
+                                personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
                                 break;
                             }
@@ -745,46 +732,56 @@ public class Batalla extends JFrame implements ActionListener {
                 }
             }
             else {
-                personajes[0].setArmadura(personajes[0].getArmadura() + 1);
+                personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                 JOptionPane.showMessageDialog(null, "Armadura aumentada.");
             }
         }
 
-        boolean obj_in_arr = elementoEnArreglo(personajes[0], personajes1(arrCards1));
+        boolean obj_in_arr = elementoEnArreglo(personajes[indice], personajes1(arrCards1));
 
         if (obj_in_arr){
-            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
-            ImageIcon originalIcon2 = new ImageIcon(siguiente.getImage());
-            Image originalImage2 = originalIcon2.getImage();
-            Image resizedImage2 = originalImage2.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            ImageIcon resizedIcon2 = new ImageIcon(resizedImage2);
-            button_chracter2.setIcon(resizedIcon2);
-            button_chracter2.setBackground(new Color(0,0,0));
-            button_chracter1.setBackground(new Color(0,0,0));
-            button_attack2.setEnabled(true);
-            total_ataques1 = 7;
-            total_ataques2 = 7;
-            button_attack.setText("Attack (7)");
-            button_attack2.setText("Attack (7)");
-            indicePersonaje2 += 1;
+            Personaje siguiente = siguientePersonaje(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
+            if (siguiente == null){
+                Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
+                ganar.setVisible(true);
+            }
+            else {
+                ImageIcon originalIcon2 = new ImageIcon(siguiente.getImage());
+                Image originalImage2 = originalIcon2.getImage();
+                Image resizedImage2 = originalImage2.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                ImageIcon resizedIcon2 = new ImageIcon(resizedImage2);
+                button_chracter2.setIcon(resizedIcon2);
+                button_chracter2.setBackground(new Color(0,0,0));
+                button_chracter1.setBackground(new Color(0,0,0));
+                button_attack2.setEnabled(true);
+                total_ataques1 = 0;
+                total_ataques2 = 0;
+                button_attack.setText("Attack");
+                button_attack2.setText("Attack");
+                indicePersonaje2 += 1;
+            }
         }
         else {
-            Personaje siguiente = siguientePersonajeSiUnoMuere(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
-            ImageIcon originalIcon = new ImageIcon(siguiente.getImage());
-            Image originalImage = originalIcon.getImage();
-            Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            ImageIcon resizedIcon = new ImageIcon(resizedImage);
-            button_chracter1.setIcon(resizedIcon);
-            button_chracter1.setBackground(new Color(0,0,0));
-            button_chracter2.setBackground(new Color(0,0,0));
-            button_attack.setEnabled(true);
-            total_ataques1 = 7;
-            total_ataques2 = 7;
-            button_attack.setText("Attack (7)");
-            button_attack2.setText("Attack (7)");
-            indicePersonaje1 += 1;
-            //Perder perder = new Perder();
-            //perder.setVisible(true);
+            Personaje siguiente = siguientePersonaje(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
+            if (siguiente == null){
+                Perder perder = new Perder();
+                perder.setVisible(true);
+            }
+            else {
+                ImageIcon originalIcon = new ImageIcon(siguiente.getImage());
+                Image originalImage = originalIcon.getImage();
+                Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+                ImageIcon resizedIcon = new ImageIcon(resizedImage);
+                button_chracter1.setIcon(resizedIcon);
+                button_chracter1.setBackground(new Color(0,0,0));
+                button_chracter2.setBackground(new Color(0,0,0));
+                button_attack.setEnabled(true);
+                total_ataques1 = 0;
+                total_ataques2 = 0;
+                button_attack.setText("Attack");
+                button_attack2.setText("Attack");
+                indicePersonaje1 += 1;
+            }
         }
         label_round.setText("ROUND - " + (round += 1) + " -");
     }
@@ -819,7 +816,7 @@ public class Batalla extends JFrame implements ActionListener {
         );
     }
 
-    private Personaje siguientePersonajeSiUnoMuere(Personaje[] personajes, Personaje personajeMuerto){
+    private Personaje siguientePersonaje(Personaje[] personajes, Personaje personajeMuerto){
         for (int i = 0; i < personajes.length; i++){
             if (personajes[i] == personajeMuerto){
                 if (i < personajes.length - 1){
@@ -829,12 +826,14 @@ public class Batalla extends JFrame implements ActionListener {
         }
         return null;
     }
-
-    private Personaje siguientePersonaje1(Personaje[] personajes, Personaje personaje1){
+    /*private Personaje siguientePersonaje1(Personaje[] personajes, Personaje personaje1){
         for (int i = 0; i < personajes.length; i++){
             if (personajes[i] == personaje1){
                 if (i < personajes.length - 1){
                     return personajes[i + 1];
+                }
+                else {
+                    return personajes[0];
                 }
             }
         }
@@ -847,32 +846,14 @@ public class Batalla extends JFrame implements ActionListener {
                 if (i < personajes.length - 1){
                     return personajes[i + 1];
                 }
+                else {
+                    return personajes[0];
+                }
             }
         }
         return null;
     }
-
-    /*private Personaje actualizarSiguientePersonaje(Personaje[] personajes){
-        int indiceActual = -1;
-
-        for (int i = 0; i < personajes.length; i++){
-            if (personajes[i].getSalud() <= 0){
-                indiceActual = i;
-                break;
-            }
-        }
-
-        if (indiceActual != -1 && indiceActual < personajes.length - 1){
-            personajes[indiceActual] = personajes[indiceActual + 1];
-            personajes[indiceActual + 1] = siguientePersonajeSiUnoMuere(personajes, personajes[indiceActual]);
-        }
-        else{
-            JOptionPane.showMessageDialog(null, "El jugador ha perdido.");
-        }
-
-        return personajes[indiceActual];
-    }*/
-
+*/
     private void infoChracter1(int indice){
         Personaje[] p1 = personajes1(arrCards1);
 
@@ -909,7 +890,96 @@ public class Batalla extends JFrame implements ActionListener {
         chracter2Info += "Efectividad de Disparo: " + p2[indice].getEfectividadDisparo();
 
         JOptionPane.showMessageDialog(this, chracter2Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
+    }
 
+    /*private void personajeVivosJ2(Personaje[] personajes){
+        int contadorInternoP2 = 0;
+
+        for (Personaje personaje : personajes){
+            if (personaje.getSalud() <= 0){
+                contadorInternoP2 ++;
+            }
+        }
+
+        JOptionPane.showMessageDialog(null, "2 - " + contadorInternoP2 + " longitud:" + personajes.length);
+
+        if (contadorInternoP2 == 3) {
+            Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
+            ganar.setVisible(true);
+        }
+
+    }
+
+    private void personajeVivosJ1(Personaje[] personajes){
+        int contadorInternoP1 = 0;
+
+        for (Personaje personaje : personajes){
+            if (personaje.getSalud() <= 0){
+                contadorInternoP1 ++;
+            }
+        }
+
+        JOptionPane.showMessageDialog(null, "1 - " + contadorInternoP1 + " longitud: " + personajes.length);
+
+        if (contadorInternoP1 == 3) {
+            Perder perder = new Perder();
+            perder.setVisible(true);
+        }
+
+    }*/
+
+    private Personaje[] personajes1(int[] arr1){
+        Personaje[] personajes1 = new Personaje[3];
+        for (int i = 0; i < arr1.length; i++){
+            if (arr1[i] == 0){
+                personajes1[i] = elf_f;
+            } else if (arr1[i] == 1) {
+                personajes1[i] = elf_m;
+            } else if (arr1[i] == 2) {
+                personajes1[i] = human_m;
+            } else if (arr1[i] == 3) {
+                personajes1[i] = human_f;
+            } else if (arr1[i] == 4) {
+                personajes1[i] = orc_f;
+            } else if (arr1[i] == 5) {
+                personajes1[i] = orc_m;
+            }
+        }
+        /*try {
+            //Connection cn = Conexion.conectar();
+            //PreparedStatement pst = cn.prepareStatement("insert into historial values (?,?,?)");
+            // LocalDateTime ahora = LocalDateTime.now();
+            //            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            //            String fechaHoraFormateada = ahora.format(formato);
+            //            JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);
+            //pst.setInt(1,0);
+            //pst.setString(2, "");
+
+        }
+        catch (SQLException exception){
+            JOptionPane.showMessageDialog(null, "Error al insertar los datos en la tabla historial " + exception.getMessage());
+        }*/
+
+        return personajes1;
+    }
+    private Personaje[] personajes2(int[] arr2){
+        Personaje[] personajes2 = new Personaje[3];
+        for (int i = 0; i < arr2.length; i++) {
+            if (arr2[i] == 0) {
+                personajes2[i] = elf_f;
+            } else if (arr2[i] == 1) {
+                personajes2[i] = elf_m;
+            } else if (arr2[i] == 2) {
+                personajes2[i] = human_m;
+            } else if (arr2[i] == 3) {
+                personajes2[i] = human_f;
+            } else if (arr2[i] == 4) {
+                personajes2[i] = orc_f;
+            } else if (arr2[i] == 5) {
+                personajes2[i] = orc_m;
+            }
+        }
+        return personajes2;
     }
 }
 

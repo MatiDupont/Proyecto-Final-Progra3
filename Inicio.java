@@ -1,42 +1,88 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
-public class Inicio extends JFrame implements ActionListener {
-    private JLabel label_wallpaper, label_menu, label_footer;
+public class Inicio extends JPanel implements ActionListener {
+    private JLabel label_menu, label_footer;
     private JButton button_inicio, button_leer_log, button_borrar_log, button_salir;
+    private BufferedImage backgroundImage;
+    private JScrollPane scrollPane;
+    private LogIn panel_LogIn;
+    private EleccionCartas panel_EleccionCartas;
     String user;
     public Inicio() {
         user = LogIn.user;
         setLayout(null);
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Inicio del jugador - " + user);
-        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper.jpg"))).getImage());
+        cargarImagenDeFondo();
+        iniciarComponentes();
+    }
 
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(1400, 1400));
+    public void actionPerformed(ActionEvent e){
+        if (e.getSource() == button_inicio){
+            panel_EleccionCartas = new EleccionCartas();
+            add(scrollPane);
+            label_menu.setVisible(false);
+            button_inicio.setVisible(false);
+            button_leer_log.setVisible(false);
+            button_borrar_log.setVisible(false);
+            button_salir.setVisible(false);
+            label_footer.setVisible(false);
+            definirPanel(panel_EleccionCartas);
+        }
+        if (e.getSource() == button_leer_log){
+            new Historial().setVisible(true);
+        }
+        if (e.getSource() == button_borrar_log){
 
-        ImageIcon wallpaper_logo = new ImageIcon("images\\wallpaper3.jpg");
-        Icon icono = new ImageIcon((wallpaper_logo.getImage().getScaledInstance(1400, 700, Image.SCALE_DEFAULT)));
-        label_wallpaper = new JLabel(icono);
-        label_wallpaper.setBounds(0, 0, 1400, 700);
-        this.repaint();
-        layeredPane.add(label_wallpaper, Integer.valueOf(0));
+        }
+        if (e.getSource() == button_salir) {
+            panel_LogIn = new LogIn();
+            add(scrollPane);
+            label_menu.setVisible(false);
+            button_inicio.setVisible(false);
+            button_leer_log.setVisible(false);
+            button_borrar_log.setVisible(false);
+            button_salir.setVisible(false);
+            label_footer.setVisible(false);
+            definirPanel(panel_LogIn);
+        }
+    }
 
+    private void cargarImagenDeFondo() {
+        try {
+            backgroundImage = ImageIO.read(new File("images\\wallpaper3.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, 1400, 700, this);
+        }
+    }
+
+    private void iniciarComponentes() {
         label_menu = new JLabel("MENU DE OPCIONES");
         label_menu.setBounds(505, 140, 370, 30);
         label_menu.setForeground(new Color(130, 15, 15));
         label_menu.setFont(new Font("Tahoma", 1, 35));
-        layeredPane.add(label_menu, Integer.valueOf(1));
+        add(label_menu);
 
         button_inicio = new JButton("Iniciar partida");
         button_inicio.setBounds(555, 280, 270, 35);
         button_inicio.setBackground(Color.white);
         button_inicio.setForeground(new Color(130, 15, 15));
         button_inicio.setFont(new Font("Calibri", 1, 25));
-        layeredPane.add(button_inicio, Integer.valueOf(1));
+        add(button_inicio);
         button_inicio.addActionListener(this);
 
         button_leer_log = new JButton("Historial");
@@ -44,7 +90,7 @@ public class Inicio extends JFrame implements ActionListener {
         button_leer_log.setBackground(Color.white);
         button_leer_log.setForeground(new Color(130, 15, 15));
         button_leer_log.setFont(new Font("Calibri", 1, 25));
-        layeredPane.add(button_leer_log, Integer.valueOf(1));
+        add(button_leer_log);
         button_leer_log.addActionListener(this);
 
         button_borrar_log = new JButton("Borrar historial");
@@ -52,47 +98,30 @@ public class Inicio extends JFrame implements ActionListener {
         button_borrar_log.setBackground(Color.white);
         button_borrar_log.setForeground(new Color(130, 15, 15));
         button_borrar_log.setFont(new Font("Calibri", 1, 25));
-        layeredPane.add(button_borrar_log, Integer.valueOf(1));
+        add(button_borrar_log);
 
         button_salir = new JButton("Salir");
         button_salir.setBounds(555, 490, 270, 35);
         button_salir.setBackground(Color.white);
         button_salir.setForeground(new Color(130, 15, 15));
         button_salir.setFont(new Font("Calibri", 1, 25));
-        layeredPane.add(button_salir, Integer.valueOf(1));
+        add(button_salir);
         button_salir.addActionListener(this);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
         label_footer.setBounds(600,600,210,20);
         label_footer.setForeground(Color.white);
-        layeredPane.add(label_footer, Integer.valueOf(1));
+        add(label_footer);
 
-        setContentPane(layeredPane);
-
-        this.setBounds(0,0,1400,1400);
-        this.setResizable(false);
-        pack();
-        this.setLocationRelativeTo(null);
+        scrollPane = new JScrollPane();
+        scrollPane.setBounds(0,0,1400,1400);
     }
 
-    public void actionPerformed(ActionEvent e){
-        if (e.getSource() == button_inicio){
-            new EleccionCartas().setVisible(true);
-        }
-        if (e.getSource() == button_leer_log){
-            new Historial().setVisible(true);
-        }
-        if (e.getSource() == button_salir){
-            new LogIn().setVisible(true);
-        }
+    private void definirPanel(LogIn panel) {
+        scrollPane.setViewportView(panel);
     }
 
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Inicio().setVisible(true);
-            }
-        });
+    private void definirPanel(EleccionCartas panel) {
+        scrollPane.setViewportView(panel);
     }
 }

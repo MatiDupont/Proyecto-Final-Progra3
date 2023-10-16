@@ -40,10 +40,19 @@ public class Historial extends JFrame {
     public Historial(){
         user = LogIn.user;
         setLayout(null);
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Historial del jugador - " + user);
-        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper.jpg"))).getImage());
+        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper7.jpg"))).getImage());
 
+        iniciarComponentes();
+
+        this.setBounds(0,0,800,500);
+        this.setResizable(false);
+        pack();
+        this.setLocationRelativeTo(null);
+    }
+
+    private void iniciarComponentes() {
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(800,500));
 
@@ -63,7 +72,7 @@ public class Historial extends JFrame {
         textPane_resume = new JTextPane();
         textPane_resume.setText(gameplay);
         textPane_resume.setFont(new Font("Arial",1,25));
-        textPane_resume.setEnabled(false);
+        textPane_resume.setEditable(false);
         scrollPane = new JScrollPane(textPane_resume);
         scrollPane.setBounds(100,120,600,270);
         layeredPane.add(scrollPane, Integer.valueOf(1));
@@ -74,19 +83,5 @@ public class Historial extends JFrame {
         layeredPane.add(label_footer, Integer.valueOf(1));
 
         setContentPane(layeredPane);
-
-        this.setBounds(0,0,800,500);
-        this.setResizable(false);
-        pack();
-        this.setLocationRelativeTo(null);
-    }
-
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Historial().setVisible(true);
-            }
-        });
     }
 }

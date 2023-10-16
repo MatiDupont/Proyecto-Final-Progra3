@@ -1,23 +1,35 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
+import conexionBBDD.Conexion;
 
-public class Batalla extends JFrame implements ActionListener {
+public class Batalla extends JPanel implements ActionListener {
     private Elfo elf_m, elf_f;
     private Humano human_m, human_f;
     private Orco orc_m, orc_f;
-    private JLabel label_wallpaper, label_title, label_player1, label_player2, label_round, label_vs, label_footer, label_arrC1, label_arrC2;
+    private BufferedImage backgroundImage;
+    private JScrollPane scrollPane;
+    private Perder panel_Perder;
+    private Ganar panel_Ganar;
+    private JLabel label_title, label_player1, label_player2, label_round, label_vs, label_footer, label_arrC1, label_arrC2;
     private JButton button_chracter1, button_chracter2, button_attack, button_attack2, button_V1, button_D1, button_F1, button_N1, button_A1, button_V2, button_D2, button_F2, button_N2, button_A2;
     public static int round = 1, turno, newWidth = 270, newHeight = 370,  indicePersonaje1 = 0, indicePersonaje2 = 0;
     public static int[] arrCards1, arrCards2;
     public static String[] image, image2;
     private int total_ataques1 = 0, total_ataques2 = 0;
     private String habilidadSeleccionada = "";
-    JLayeredPane layeredPane = new JLayeredPane();
     public Batalla(Elfo elfo1, Elfo elfo2, Humano humano1, Humano humano2, Orco orco1, Orco orco2){
         this.elf_m = elfo1;
         this.elf_f = elfo2;
@@ -27,36 +39,53 @@ public class Batalla extends JFrame implements ActionListener {
         this.orc_f = orco2;
 
         setLayout(null);
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Batalla");
-        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper.jpg"))).getImage());
+        cargarImagenDeFondo();
+        iniciarComponentes();
 
-        layeredPane.setPreferredSize(new Dimension(1400,1400));
+        if (turno == 1){
+            button_attack2.setEnabled(false);
+            button_attack.setEnabled(true);
+        }
+        else {
+            button_attack.setEnabled(false);
+            button_attack2.setEnabled(true);
+        }
+    }
 
-        ImageIcon wallpaper_logo = new ImageIcon("images\\wallpaper.jpg");
-        Icon icono = new ImageIcon(wallpaper_logo.getImage().getScaledInstance(1400,700,Image.SCALE_DEFAULT));
-        label_wallpaper = new JLabel(icono);
-        label_wallpaper.setBounds(0,0,1400,700);
-        this.repaint();
-        layeredPane.add(label_wallpaper, Integer.valueOf(0));
+    private void cargarImagenDeFondo() {
+        try {
+            backgroundImage = ImageIO.read(new File("images\\wallpaper.jpg"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage,0,0,1400,700,this);
+        }
+    }
+
+    private void iniciarComponentes() {
         label_title = new JLabel("BATALLA");
         label_title.setBounds(570,30,300,30);
         label_title.setForeground(new Color(130,15,15));
         label_title.setFont(new Font("Tahoma",1,35));
-        layeredPane.add(label_title, Integer.valueOf(1));
+        add(label_title);
 
         label_player1 = new JLabel("PLAYER 1");
         label_player1.setBounds(210,100,200,40);
         label_player1.setForeground(Color.white);
         label_player1.setFont(new Font("Arial",1,30));
-        layeredPane.add(label_player1, Integer.valueOf(1));
+        add(label_player1);
 
         label_player2 = new JLabel("PLAYER 2");
         label_player2.setBounds(910,100,200,40);
         label_player2.setForeground(Color.white);
         label_player2.setFont(new Font("Arial",1,30));
-        layeredPane.add(label_player2, Integer.valueOf(1));
+        add(label_player2);
 
         Random random = new Random();
 
@@ -111,7 +140,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_chracter1 = new JButton(resizedIcon);
         button_chracter1.setBounds(150,150,270,370);
         button_chracter1.setBackground(Color.BLACK);
-        layeredPane.add(button_chracter1, Integer.valueOf(1));
+        add(button_chracter1);
         button_chracter1.addActionListener(this);
 
         button_V1 = new JButton("V (+1)");
@@ -120,7 +149,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_V1.setForeground(new Color(130,15,15));
         button_V1.setFont(new Font("Calibri",1,18));
         button_V1.setEnabled(false);
-        layeredPane.add(button_V1, Integer.valueOf(1));
+        add(button_V1);
         button_V1.addActionListener(this);
 
         button_D1 = new JButton("D (+1)");
@@ -129,7 +158,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_D1.setForeground(new Color(130,15,15));
         button_D1.setFont(new Font("Calibri",1,18));
         button_D1.setEnabled(false);
-        layeredPane.add(button_D1, Integer.valueOf(1));
+        add(button_D1);
         button_D1.addActionListener(this);
 
         button_F1 = new JButton("F (+1)");
@@ -138,7 +167,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_F1.setForeground(new Color(130,15,15));
         button_F1.setFont(new Font("Calibri",1,18));
         button_F1.setEnabled(false);
-        layeredPane.add(button_F1, Integer.valueOf(1));
+        add(button_F1);
         button_F1.addActionListener(this);
 
         button_N1 = new JButton("N (+1)");
@@ -147,7 +176,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_N1.setForeground(new Color(130,15,15));
         button_N1.setFont(new Font("Calibri",1,18));
         button_N1.setEnabled(false);
-        layeredPane.add(button_N1, Integer.valueOf(1));
+        add(button_N1);
         button_N1.addActionListener(this);
 
         button_A1 = new JButton("A (+1)");
@@ -156,7 +185,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_A1.setForeground(new Color(130,15,15));
         button_A1.setFont(new Font("Calibri",1,18));
         button_A1.setEnabled(false);
-        layeredPane.add(button_A1, Integer.valueOf(1));
+        add(button_A1);
         button_A1.addActionListener(this);
 
         Random random1 = new Random();
@@ -167,20 +196,20 @@ public class Batalla extends JFrame implements ActionListener {
         button_attack.setBackground(Color.white);
         button_attack.setForeground(new Color(135,15,15));
         button_attack.setFont(new Font("Calibri",1,18));
-        layeredPane.add(button_attack, Integer.valueOf(1));
+        add(button_attack);
         button_attack.addActionListener(this);
 
         label_round = new JLabel("ROUND - " + round + " -");
         label_round.setBounds(505,150,270,40);
         label_round.setForeground(Color.white);
         label_round.setFont(new Font("Times New Roman",2,50));
-        layeredPane.add(label_round, Integer.valueOf(1));
+        add(label_round);
 
         label_vs = new JLabel("VS");
         label_vs.setBounds(600,300,100,70);
         label_vs.setForeground(Color.white);
         label_vs.setFont(new Font("Lucida Console",1,70));
-        layeredPane.add(label_vs, Integer.valueOf(1));
+        add(label_vs);
 
         image2 = new String[3];
 
@@ -207,7 +236,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_chracter2 = new JButton(resizedIcon2);
         button_chracter2.setBounds(850,150,270,370);
         button_chracter2.setBackground(Color.BLACK);
-        layeredPane.add(button_chracter2, Integer.valueOf(1));
+        add(button_chracter2);
         button_chracter2.addActionListener(this);
 
         button_V2 = new JButton("V (+1)");
@@ -216,7 +245,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_V2.setForeground(new Color(130,15,15));
         button_V2.setFont(new Font("Calibri",1,18));
         button_V2.setEnabled(false);
-        layeredPane.add(button_V2, Integer.valueOf(1));
+        add(button_V2);
         button_V2.addActionListener(this);
 
         button_D2 = new JButton("D (+1)");
@@ -225,7 +254,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_D2.setForeground(new Color(130,15,15));
         button_D2.setFont(new Font("Calibri",1,18));
         button_D2.setEnabled(false);
-        layeredPane.add(button_D2, Integer.valueOf(1));
+        add(button_D2);
         button_D2.addActionListener(this);
 
         button_F2 = new JButton("F (+1)");
@@ -234,7 +263,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_F2.setForeground(new Color(130,15,15));
         button_F2.setFont(new Font("Calibri",1,18));
         button_F2.setEnabled(false);
-        layeredPane.add(button_F2, Integer.valueOf(1));
+        add(button_F2);
         button_F2.addActionListener(this);
 
         button_N2 = new JButton("N (+1)");
@@ -243,7 +272,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_N2.setForeground(new Color(130,15,15));
         button_N2.setFont(new Font("Calibri",1,18));
         button_N2.setEnabled(false);
-        layeredPane.add(button_N2, Integer.valueOf(1));
+        add(button_N2);
         button_N2.addActionListener(this);
 
         button_A2 = new JButton("A (+1)");
@@ -252,7 +281,7 @@ public class Batalla extends JFrame implements ActionListener {
         button_A2.setForeground(new Color(130,15,15));
         button_A2.setFont(new Font("Calibri",1,18));
         button_A2.setEnabled(false);
-        layeredPane.add(button_A2, Integer.valueOf(1));
+        add(button_A2);
         button_A2.addActionListener(this);
 
         button_attack2 = new JButton("Attack");
@@ -261,20 +290,20 @@ public class Batalla extends JFrame implements ActionListener {
         button_attack2.setForeground(new Color(135,15,15));
         button_attack2.setFont(new Font("Calibri",1,18));
         //button_attack2.setEnabled(false);
-        layeredPane.add(button_attack2, Integer.valueOf(1));
+        add(button_attack2);
         button_attack2.addActionListener(this);
 
         label_arrC1 = new JLabel();
         label_arrC1.setBounds(575,500,200,30);
         label_arrC1.setForeground(Color.white);
         label_arrC1.setFont(new Font("Arial",1,18));
-        layeredPane.add(label_arrC1, Integer.valueOf(1));
+        //add(label_arrC1);
 
         label_arrC2 = new JLabel();
         label_arrC2.setBounds(575,550,200,30);
         label_arrC2.setForeground(Color.white);
         label_arrC2.setFont(new Font("Arial",1,18));
-        layeredPane.add(label_arrC2, Integer.valueOf(1));
+        //add(label_arrC2);
 
         String textArrChracter1 = "Player 1: ";
         for (int value : arrCards1) {
@@ -292,36 +321,16 @@ public class Batalla extends JFrame implements ActionListener {
         label_footer = new JLabel("Creado por Matias Dupont ©");
         label_footer.setBounds(575,610,210,20);
         label_footer.setForeground(Color.white);
-        layeredPane.add(label_footer, Integer.valueOf(1));
+        add(label_footer);
 
-        setContentPane(layeredPane);
-
-        if (turno == 1){
-            button_attack2.setEnabled(false);
-            button_attack.setEnabled(true);
-        }
-        else {
-            button_attack.setEnabled(false);
-            button_attack2.setEnabled(true);
-        }
-
-        this.setBounds(0,0,1400,1400);
-        this.setResizable(false);
-        pack();
-        this.setLocationRelativeTo(null);
+        scrollPane = new JScrollPane();
+        scrollPane.setBounds(0,0,1400,1400);
     }
 
     private void ataqueJugador1(Personaje[] atacante, Personaje[] defensor){
         total_ataques1 ++;
         int attack = 0;
         Random random = new Random();
-
-        /*if (atacante[0].getSalud() <= 0){
-            atacante[0] = siguientePersonaje1(atacante, atacante[0]);
-        }
-        if (defensor[0].getSalud() <= 0){
-            defensor[0] = siguientePersonaje2(defensor, defensor[0]);
-        }*/
 
         if (atacante[indicePersonaje1] instanceof Elfo){
             attack =  Math.abs((int) (((((((Elfo)atacante[indicePersonaje1]).valorAtaque() * ((Elfo)atacante[indicePersonaje1]).getEfectividadDisparo()) - defensor[indicePersonaje2].poderDefensa()) / 500) * 100) * 1.05));
@@ -332,7 +341,6 @@ public class Batalla extends JFrame implements ActionListener {
         }
 
         atacante[indicePersonaje1].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
-        // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
         JOptionPane.showMessageDialog(null,"Ataque N° " + total_ataques1 + " del jugador 1.\n" + atacante[indicePersonaje1].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje2].getNombre());
         defensor[indicePersonaje2].setSalud(defensor[indicePersonaje2].getSalud() - attack);
@@ -343,13 +351,6 @@ public class Batalla extends JFrame implements ActionListener {
         int attack = 0;
         Random random = new Random();
 
-        /*if (atacante[0].getSalud() <= 0){
-            atacante[0] = siguientePersonaje2(atacante, atacante[0]);
-        }
-        if (defensor[0].getSalud() <= 0){
-            defensor[0] = siguientePersonaje1(defensor, defensor[0]);
-        }*/
-
         if (atacante[indicePersonaje2] instanceof Elfo){
             attack =  Math.abs((int) (((((((Elfo)atacante[indicePersonaje2]).valorAtaque() * ((Elfo)atacante[indicePersonaje2]).getEfectividadDisparo()) - defensor[indicePersonaje1].poderDefensa()) / 500) * 100) * 1.05));
         } else if (atacante[indicePersonaje2] instanceof Humano){
@@ -359,7 +360,6 @@ public class Batalla extends JFrame implements ActionListener {
         }
 
         atacante[indicePersonaje2].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
-        // personajeDefensor.setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
         JOptionPane.showMessageDialog(null, "Ataque N° " + total_ataques2 + " del jugador 2.\n" + atacante[indicePersonaje2].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje1].getNombre());
         defensor[indicePersonaje1].setSalud(defensor[indicePersonaje1].getSalud() - attack);
@@ -368,31 +368,9 @@ public class Batalla extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button_chracter1) {
             infoChracter1(indicePersonaje1);
-
-            /*if (p1[0].getSalud() <= 0) {
-                if (p1[1] != null) {
-                    p1[0] = p1[1];
-                    p1[1] = p1[2];
-                    p1[2] = null;
-                } else {
-                    JOptionPane.showMessageDialog(this, "No hay mas personajes en arrCards1.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-            }*/
         }
         if (e.getSource() == button_chracter2) {
             infoChracter2(indicePersonaje2);
-
-            /*if (p2[0].getSalud() <= 0) {
-                if (p2[1] != null) {
-                    p2[0] = p2[1];
-                    p2[1] = p2[2];
-                    p2[2] = null;
-                } else {
-                    JOptionPane.showMessageDialog(this, "No hay mas personajes en arrcards2.", "Fin del juego", JOptionPane.INFORMATION_MESSAGE);
-                    return;
-                }
-            }*/
         }
         if (e.getSource() == button_V2 || e.getSource() == button_D2 || e.getSource() == button_F2 || e.getSource() == button_N2 || e.getSource() == button_A2) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
@@ -450,43 +428,6 @@ public class Batalla extends JFrame implements ActionListener {
             }
         }
     }
-
-    /*private void totalAtaques(){
-        if ((total_ataques1 == 0) && (total_ataques2 == 0)){
-            label_round.setText("ROUND - " + (round += 1) + " -");
-
-            Personaje personajeActual1 = personajes1(arrCards1)[indicePersonaje1];
-            Personaje siguienteP1 = siguientePersonaje1(personajes1(arrCards1), personajeActual1);
-            if (siguienteP1 != null){
-                personajeActual1 = siguienteP1;
-                indicePersonaje1 += 1;
-            }
-            ImageIcon originalIcon = new ImageIcon(personajeActual1.getImage());
-            Image originalImage = originalIcon.getImage();
-            Image resizedImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            ImageIcon resizedIcon = new ImageIcon(resizedImage);
-            button_chracter1.setIcon(resizedIcon);
-            total_ataques1 = 7;
-            button_attack.setText("Attack (7)");
-
-            Personaje personajeActual2 = personajes2(arrCards2)[indicePersonaje2];
-            Personaje siguienteP2 = siguientePersonaje2(personajes2(arrCards2), personajeActual2);
-            if (siguienteP2 != null){
-                personajeActual2 = siguienteP2;
-                indicePersonaje2 += 1;
-            }
-            ImageIcon originalIcon2 = new ImageIcon(personajeActual2.getImage());
-            Image originalImage2 = originalIcon2.getImage();
-            Image resizedImage2 = originalImage2.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            ImageIcon resizedIcon2 = new ImageIcon(resizedImage2);
-            button_chracter2.setIcon(resizedIcon2);
-            total_ataques2 = 7;
-            button_attack2.setText("Attack (7)");
-
-            button_chracter1.setBackground(new Color(0,0,0));
-            button_chracter2.setBackground(new Color(0,0,0));
-        }
-    }*/
 
     private boolean estadoCarta(Personaje[] personajes, int indicePersonaje){
         boolean vivo = true;
@@ -742,8 +683,28 @@ public class Batalla extends JFrame implements ActionListener {
         if (obj_in_arr){
             Personaje siguiente = siguientePersonaje(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
             if (siguiente == null){
-                Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
-                ganar.setVisible(true);
+                panel_Ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
+                add(scrollPane);
+                label_title.setVisible(false);
+                label_player1.setVisible(false);
+                label_player2.setVisible(false);
+                button_chracter1.setVisible(false);
+                button_V1.setVisible(false);
+                button_D1.setVisible(false);
+                button_F1.setVisible(false);
+                button_N1.setVisible(false);
+                button_A1.setVisible(false);
+                button_attack.setVisible(false);
+                label_round.setVisible(false);
+                label_vs.setVisible(false);
+                button_chracter2.setVisible(false);
+                button_V2.setVisible(false);
+                button_D2.setVisible(false);
+                button_F2.setVisible(false);
+                button_N2.setVisible(false);
+                button_A2.setVisible(false);
+                button_attack2.setVisible(false);
+                definirPanel(panel_Ganar);
             }
             else {
                 ImageIcon originalIcon2 = new ImageIcon(siguiente.getImage());
@@ -764,8 +725,28 @@ public class Batalla extends JFrame implements ActionListener {
         else {
             Personaje siguiente = siguientePersonaje(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
             if (siguiente == null){
-                Perder perder = new Perder();
-                perder.setVisible(true);
+                panel_Perder = new Perder();
+                add(scrollPane);
+                label_title.setVisible(false);
+                label_player1.setVisible(false);
+                label_player2.setVisible(false);
+                button_chracter1.setVisible(false);
+                button_V1.setVisible(false);
+                button_D1.setVisible(false);
+                button_F1.setVisible(false);
+                button_N1.setVisible(false);
+                button_A1.setVisible(false);
+                button_attack.setVisible(false);
+                label_round.setVisible(false);
+                label_vs.setVisible(false);
+                button_chracter2.setVisible(false);
+                button_V2.setVisible(false);
+                button_D2.setVisible(false);
+                button_F2.setVisible(false);
+                button_N2.setVisible(false);
+                button_A2.setVisible(false);
+                button_attack2.setVisible(false);
+                definirPanel(panel_Perder);
             }
             else {
                 ImageIcon originalIcon = new ImageIcon(siguiente.getImage());
@@ -826,34 +807,6 @@ public class Batalla extends JFrame implements ActionListener {
         }
         return null;
     }
-    /*private Personaje siguientePersonaje1(Personaje[] personajes, Personaje personaje1){
-        for (int i = 0; i < personajes.length; i++){
-            if (personajes[i] == personaje1){
-                if (i < personajes.length - 1){
-                    return personajes[i + 1];
-                }
-                else {
-                    return personajes[0];
-                }
-            }
-        }
-        return null;
-    }
-
-    private Personaje siguientePersonaje2(Personaje[] personajes, Personaje personaje2){
-        for (int i = 0; i < personajes.length; i++){
-            if (personajes[i] == personaje2){
-                if (i < personajes.length - 1){
-                    return personajes[i + 1];
-                }
-                else {
-                    return personajes[0];
-                }
-            }
-        }
-        return null;
-    }
-*/
     private void infoChracter1(int indice){
         Personaje[] p1 = personajes1(arrCards1);
 
@@ -892,46 +845,12 @@ public class Batalla extends JFrame implements ActionListener {
         JOptionPane.showMessageDialog(this, chracter2Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /*private void personajeVivosJ2(Personaje[] personajes){
-        int contadorInternoP2 = 0;
-
-        for (Personaje personaje : personajes){
-            if (personaje.getSalud() <= 0){
-                contadorInternoP2 ++;
-            }
-        }
-
-        JOptionPane.showMessageDialog(null, "2 - " + contadorInternoP2 + " longitud:" + personajes.length);
-
-        if (contadorInternoP2 == 3) {
-            Ganar ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
-            ganar.setVisible(true);
-        }
-
-    }
-
-    private void personajeVivosJ1(Personaje[] personajes){
-        int contadorInternoP1 = 0;
-
-        for (Personaje personaje : personajes){
-            if (personaje.getSalud() <= 0){
-                contadorInternoP1 ++;
-            }
-        }
-
-        JOptionPane.showMessageDialog(null, "1 - " + contadorInternoP1 + " longitud: " + personajes.length);
-
-        if (contadorInternoP1 == 3) {
-            Perder perder = new Perder();
-            perder.setVisible(true);
-        }
-
-    }*/
-
+    String cartasJ1 = "";
     private Personaje[] personajes1(int[] arr1){
         Personaje[] personajes1 = new Personaje[3];
-        for (int i = 0; i < arr1.length; i++){
-            if (arr1[i] == 0){
+        for (int i = 0; i < arr1.length; i++) {
+            cartasJ1.concat("-------- Personaje " + (i + 1) + " Jugador 1 --------\n");
+            if (arr1[i] == 0) {
                 personajes1[i] = elf_f;
             } else if (arr1[i] == 1) {
                 personajes1[i] = elf_m;
@@ -944,27 +863,27 @@ public class Batalla extends JFrame implements ActionListener {
             } else if (arr1[i] == 5) {
                 personajes1[i] = orc_m;
             }
-        }
-        /*try {
-            //Connection cn = Conexion.conectar();
-            //PreparedStatement pst = cn.prepareStatement("insert into historial values (?,?,?)");
-            // LocalDateTime ahora = LocalDateTime.now();
-            //            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-            //            String fechaHoraFormateada = ahora.format(formato);
-            //            JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);
-            //pst.setInt(1,0);
-            //pst.setString(2, "");
 
+            cartasJ1.concat("Nombre: " + personajes1[i].getNombre() + "\n\n" +
+                    "           Caracteristicas" + "\n\n" +
+                    "Apodo: " + personajes1[i].getApodo() + "\n" +
+                    "Edad: " + personajes1[i].getEdad() + "\n" +
+                    "Raza: " + personajes1[i].getRaza() + "\n" +
+                    "Salud: " + personajes1[i].getSalud() + "\n" +
+                    "Velocidad: " + personajes1[i].getVelocidad() + "\n" +
+                    "Destreza: " + personajes1[i].getDestreza() + "\n" +
+                    "Fuerza: " + personajes1[i].getFuerza() + "\n" +
+                    "Nivel: " + personajes1[i].getNivel() + "\n" +
+                    "Armadura: " + personajes1[i].getArmadura() + "\n" +
+                    "Efectividad de Disparo: " + personajes1[i].getEfectividadDisparo() + "\n\n");
         }
-        catch (SQLException exception){
-            JOptionPane.showMessageDialog(null, "Error al insertar los datos en la tabla historial " + exception.getMessage());
-        }*/
-
         return personajes1;
     }
+    String cartasJ2 = "";
     private Personaje[] personajes2(int[] arr2){
         Personaje[] personajes2 = new Personaje[3];
         for (int i = 0; i < arr2.length; i++) {
+            cartasJ2.concat("-------- Personaje " + (i + 1) + " Jugador 2 --------\n");
             if (arr2[i] == 0) {
                 personajes2[i] = elf_f;
             } else if (arr2[i] == 1) {
@@ -978,8 +897,53 @@ public class Batalla extends JFrame implements ActionListener {
             } else if (arr2[i] == 5) {
                 personajes2[i] = orc_m;
             }
+
+            cartasJ2.concat("Nombre: " + personajes2[i].getNombre() + "\n\n" +
+            "           Caracteristicas" + "\n\n" +
+            "Apodo: " + personajes2[i].getApodo() + "\n" +
+            "Edad: " + personajes2[i].getEdad() + "\n" +
+            "Raza: " + personajes2[i].getRaza() + "\n" +
+            "Salud: " + personajes2[i].getSalud() + "\n" +
+            "Velocidad: " + personajes2[i].getVelocidad() + "\n" +
+            "Destreza: " + personajes2[i].getDestreza() + "\n" +
+            "Fuerza: " + personajes2[i].getFuerza() + "\n" +
+            "Nivel: " + personajes2[i].getNivel() + "\n" +
+            "Armadura: " + personajes2[i].getArmadura() + "\n" +
+            "Efectividad de Disparo: " + personajes2[i].getEfectividadDisparo() + "\n\n");
         }
+        insertarDatosTablaCartas();
         return personajes2;
     }
-}
+    private void insertarDatosTablaCartas(){
+        try {
+            Connection cn = Conexion.conectar();
+            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?)");
+            LocalDateTime ahora = LocalDateTime.now();
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            String fechaHoraFormateada = ahora.format(formato);
+            JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);
 
+            pst.setInt(1,0);
+            pst.setString(2, cartasJ1);
+            pst.setString(3, cartasJ2);
+            pst.setString(4, fechaHoraFormateada);
+
+            pst.executeUpdate();
+            cn.close();
+
+            JOptionPane.showMessageDialog(null, "Datos registrados exitosamente.");
+
+        }
+        catch (SQLException exception){
+            JOptionPane.showMessageDialog(null, "Error al insertar los datos en la tabla cartas " + exception.getMessage());
+        }
+    }
+
+    private void definirPanel(Perder panel) {
+        scrollPane.setViewportView(panel);
+    }
+
+    private void definirPanel(Ganar panel) {
+        scrollPane.setViewportView(panel);
+    }
+}

@@ -1,61 +1,75 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
-public class Perder extends JFrame implements ActionListener {
-    private JLabel label_wallpaper, label_footer;
+public class Perder extends JPanel implements ActionListener {
+    private JLabel label_footer;
     private JButton button_menu;
+    private JScrollPane scrollPane;
+    private Inicio panel_Inicio;
+    private BufferedImage backgroundImage;
+
     public Perder(){
         setLayout(null);
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Perdiste");
-        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper.jpg"))).getImage());
+        cargarImagenDeFondo();
+        iniciarComponentes();
+    }
 
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(800,500));
+    private void cargarImagenDeFondo() {
+        try {
+            backgroundImage = ImageIO.read(new File("images\\wallpaper5.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        ImageIcon wallpaper_logo = new ImageIcon("images\\wallpaper5.jpg");
-        Icon icono = new ImageIcon(wallpaper_logo.getImage().getScaledInstance(800,500,Image.SCALE_DEFAULT));
-        label_wallpaper = new JLabel(icono);
-        label_wallpaper.setBounds(0,0,800,500);
-        this.repaint();
-        layeredPane.add(label_wallpaper, Integer.valueOf(0));
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, 1400, 700, this);
+        }
+    }
 
+    private void iniciarComponentes() {
         button_menu = new JButton("Volver al menu");
-        button_menu.setBounds(310,410,200,30);
+        button_menu.setBounds(560,550,200,30);
         button_menu.setForeground(new Color(130,15,15));
         button_menu.setFont(new Font("Calibri",1,18));
-        layeredPane.add(button_menu, Integer.valueOf(1));
+        add(button_menu);
         button_menu.addActionListener(this);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
-        label_footer.setBounds(320,460,210,20);
+        label_footer.setBounds(590,650,210,20);
         label_footer.setForeground(Color.white);
-        layeredPane.add(label_footer, Integer.valueOf(1));
+        add(label_footer);
 
-        setContentPane(layeredPane);
-
-        this.setBounds(0,0,800,500);
-        this.setResizable(false);
-        pack();
-        this.setLocationRelativeTo(null);
+        panel_Inicio = new Inicio();
+        scrollPane = new JScrollPane();
+        scrollPane.setBounds(0,0,1400,1400);
 
     }
 
     public void actionPerformed(ActionEvent e){
         if (e.getSource() == button_menu){
-            new Inicio().setVisible(true);
+            add(scrollPane);
+            button_menu.setVisible(false);
+            label_footer.setVisible(false);
+            definirPanel(panel_Inicio);
         }
     }
 
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Perder().setVisible(true);
-            }
-        });
+    private void definirPanel(Inicio panel) {
+        scrollPane.setViewportView(panel);
     }
+
+    public static void main(String[] args) {
+        new Perder().setVisible(true);
+    }
+
 }

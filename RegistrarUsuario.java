@@ -20,8 +20,61 @@ public class RegistrarUsuario extends JFrame implements ActionListener {
         setLayout(null);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Registrar usuario");
-        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper.jpg"))).getImage());
+        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper7.jpg"))).getImage());
 
+        iniciarComponentes();
+
+        this.setBounds(0,0,700,400);
+        this.setResizable(false);
+        pack();
+        this.setLocationRelativeTo(null);
+    }
+
+    public void actionPerformed(ActionEvent e){
+        if (e.getSource() == button_registrar){
+            String user = "", pass = "";
+
+            user = textField_user.getText().trim();
+            pass = passwordField.getText().trim();
+
+            if (!user.equals("") && (!pass.equals(""))){
+                try{
+                    Connection cn = Conexion.conectar();
+                    PreparedStatement pst = cn.prepareStatement("select username from usuarios where username = '" + user + "'");
+
+                    ResultSet rs = pst.executeQuery();
+
+                    if (rs.next()){
+                        JOptionPane.showMessageDialog(null, "Usuario con ese nombre ya registrado en la base de datos.");
+                    }
+                    else {
+                        PreparedStatement pst2 = cn.prepareStatement("insert into usuarios values (?,?,?)");
+
+                        pst2.setInt(1,0);
+                        pst2.setString(2,user);
+                        pst2.setString(3,pass);
+
+                        pst2.executeUpdate();
+
+                        cn.close();
+
+                        JOptionPane.showMessageDialog(null, "Registro exitoso.");
+                        this.dispose();
+                    }
+
+
+                }
+                catch (SQLException exception){
+                    JOptionPane.showMessageDialog(null, "Error al registrar usuario! " + exception.getMessage());
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
+            }
+        }
+    }
+
+    private void iniciarComponentes() {
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(700,400));
 
@@ -82,62 +135,5 @@ public class RegistrarUsuario extends JFrame implements ActionListener {
         layeredPane.add(label_footer, Integer.valueOf(1));
 
         setContentPane(layeredPane);
-
-        this.setBounds(0,0,700,400);
-        this.setResizable(false);
-        pack();
-        this.setLocationRelativeTo(null);
-    }
-
-    public void actionPerformed(ActionEvent e){
-        if (e.getSource() == button_registrar){
-            String user = "", pass = "";
-
-            user = textField_user.getText().trim();
-            pass = passwordField.getText().trim();
-
-            if (!user.equals("") && (!pass.equals(""))){
-                try{
-                    Connection cn = Conexion.conectar();
-                    PreparedStatement pst = cn.prepareStatement("select username from usuarios where username = '" + user + "'");
-
-                    ResultSet rs = pst.executeQuery();
-
-                    if (rs.next()){
-                        JOptionPane.showMessageDialog(null, "Usuario con ese nombre ya registrado en la base de datos.");
-                    }
-                    else {
-                        PreparedStatement pst2 = cn.prepareStatement("insert into usuarios values (?,?,?)");
-
-                        pst2.setInt(1,0);
-                        pst2.setString(2,user);
-                        pst2.setString(3,pass);
-
-                        pst2.executeUpdate();
-
-                        cn.close();
-
-                        JOptionPane.showMessageDialog(null, "Registro exitoso.");
-                        this.dispose();
-                    }
-
-
-                }
-                catch (SQLException exception){
-                    JOptionPane.showMessageDialog(null, "Error al registrar usuario! " + exception.getMessage());
-                }
-            }
-            else {
-                JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
-            }
-        }
-    }
-    public static void main(String[] args) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new RegistrarUsuario().setVisible(true);
-            }
-        });
     }
 }

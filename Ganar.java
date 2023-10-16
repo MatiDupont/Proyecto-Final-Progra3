@@ -1,15 +1,22 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
-public class Ganar extends JFrame implements ActionListener {
+public class Ganar extends JPanel implements ActionListener {
     private Elfo elf_m, elf_f;
     private Humano human_m, human_f;
     private Orco orc_m, orc_f;
     private JLabel label_wallpaper, label_footer;
     private JTextArea textArea_title;
+    private JScrollPane scrollPane;
+    private Inicio panel_Inicio;
+    private BufferedImage backgroundImage;
     private JButton button_card1, button_card2, button_card3, button_menu;
     public static int[] arrChracter1;
     public Ganar(Elfo elfo1, Elfo elfo2, Humano humano1, Humano humano2, Orco orco1, Orco orco2){
@@ -21,27 +28,34 @@ public class Ganar extends JFrame implements ActionListener {
         this.orc_f = orco2;
 
         setLayout(null);
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        setTitle("Ganaste");
-        setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper.jpg"))).getImage());
+        cargarImagenDeFondo();
+        iniciarComponentes();
+    }
 
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(1400,1400));
+    private void cargarImagenDeFondo() {
+        try {
+            backgroundImage = ImageIO.read(new File("images\\wallpaper6.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        ImageIcon wallpaper_logo = new ImageIcon("images\\wallpaper6.png");
-        Icon icono = new ImageIcon(wallpaper_logo.getImage().getScaledInstance(1400,700,Image.SCALE_DEFAULT));
-        label_wallpaper = new JLabel(icono);
-        label_wallpaper.setBounds(0,0,1400,700);
-        this.repaint();
-        layeredPane.add(label_wallpaper, Integer.valueOf(0));
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, 1400, 1400, this);
+        }
+    }
 
+    private void iniciarComponentes() {
         textArea_title = new JTextArea();
         textArea_title.setText("FELICIDADES, ERES MERECEDOR DEL TRONO DE HIERRO");
         textArea_title.setEditable(false);
         textArea_title.setBounds(300,30,700,30);
         textArea_title.setForeground(new Color(130,15,15));
         textArea_title.setFont(new Font("Britannic Bold",4,27));
-        layeredPane.add(textArea_title, Integer.valueOf(1));
+        add(textArea_title);
 
         arrChracter1 = EleccionCartas.arr_chracter1;
         String[] image = new String[3];
@@ -74,7 +88,7 @@ public class Ganar extends JFrame implements ActionListener {
         button_card1 = new JButton(resizedIcon);
         button_card1.setBounds(35,150,270,370);
         button_card1.setBackground(Color.BLACK);
-        layeredPane.add(button_card1, Integer.valueOf(1));
+        add(button_card1);
         button_card1.addActionListener(this);
         if (personaje.getSalud() > 0){
             button_card1.setBackground(new Color(0,255,0));
@@ -91,7 +105,7 @@ public class Ganar extends JFrame implements ActionListener {
         button_card2 = new JButton(resizedIcon2);
         button_card2.setBounds(500,150,270,370);
         button_card2.setBackground(Color.BLACK);
-        layeredPane.add(button_card2, Integer.valueOf(1));
+        add(button_card2);
         button_card2.addActionListener(this);
         if (personaje.getSalud() > 0){
             button_card2.setBackground(new Color(0,255,0));
@@ -108,7 +122,7 @@ public class Ganar extends JFrame implements ActionListener {
         button_card3 = new JButton(resizedIcon3);
         button_card3.setBounds(980,150,270,370);
         button_card3.setBackground(Color.BLACK);
-        layeredPane.add(button_card3, Integer.valueOf(1));
+        add(button_card3);
         button_card3.addActionListener(this);
         if (personaje.getSalud() > 0){
             button_card3.setBackground(new Color(0,255,0));
@@ -122,21 +136,17 @@ public class Ganar extends JFrame implements ActionListener {
         button_menu.setBackground(Color.white);
         button_menu.setForeground(new Color(130,15,15));
         button_menu.setFont(new Font("Calibri",1,18));
-        layeredPane.add(button_menu, Integer.valueOf(1));
+        add(button_menu);
         button_menu.addActionListener(this);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
         label_footer.setBounds(590,650,210,20);
         label_footer.setForeground(Color.white);
-        layeredPane.add(label_footer, Integer.valueOf(1));
+        add(label_footer);
 
-        setContentPane(layeredPane);
-
-        this.setBounds(0,0,1400,1400);
-        this.setResizable(false);
-        pack();
-        this.setLocationRelativeTo(null);
-
+        panel_Inicio = new Inicio();
+        scrollPane = new JScrollPane();
+        scrollPane.setBounds(0,0,1400,1400);
     }
 
     public void actionPerformed(ActionEvent e){
@@ -150,7 +160,14 @@ public class Ganar extends JFrame implements ActionListener {
             infoMessage(2);
         }
         if (e.getSource() == button_menu){
-            new Inicio().setVisible(true);
+            add(scrollPane);
+            textArea_title.setVisible(false);
+            button_card1.setVisible(false);
+            button_card2.setVisible(false);
+            button_card3.setVisible(false);
+            button_menu.setVisible(false);
+            label_footer.setVisible(false);
+            definirPanel(panel_Inicio);
         }
     }
     private void infoMessage(int param) {
@@ -192,4 +209,9 @@ public class Ganar extends JFrame implements ActionListener {
 
         return personaje;
     }
+
+    private void definirPanel(Inicio panel) {
+        scrollPane.setViewportView(panel);
+    }
+
 }

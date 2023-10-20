@@ -10,9 +10,10 @@ import java.util.Objects;
 
 public class Inicio extends JPanel implements ActionListener {
     private JLabel label_menu, label_footer;
-    private JButton button_inicio, button_leer_log, button_borrar_log, button_salir;
+    private JButton button_inicio, button_leer_log, button_salir;
     private BufferedImage backgroundImage;
     private JScrollPane scrollPane;
+    private Historial historial;
     private LogIn panel_LogIn;
     private EleccionCartas panel_EleccionCartas;
     String user;
@@ -30,15 +31,19 @@ public class Inicio extends JPanel implements ActionListener {
             label_menu.setVisible(false);
             button_inicio.setVisible(false);
             button_leer_log.setVisible(false);
-            button_borrar_log.setVisible(false);
             button_salir.setVisible(false);
             label_footer.setVisible(false);
             definirPanel(panel_EleccionCartas);
         }
         if (e.getSource() == button_leer_log){
-            new Historial().setVisible(true);
-        }
-        if (e.getSource() == button_borrar_log){
+            historial = new Historial();
+            if (historial.isHistorialVacio()){
+                historial.getTextPane_resume().setText("Aun no hay registros de batallas.");
+            }
+            else {
+                historial.getTextPane_resume().setText(historial.imprimirDatosTabla());
+            }
+            historial.setVisible(true);
 
         }
         if (e.getSource() == button_salir) {
@@ -47,7 +52,6 @@ public class Inicio extends JPanel implements ActionListener {
             label_menu.setVisible(false);
             button_inicio.setVisible(false);
             button_leer_log.setVisible(false);
-            button_borrar_log.setVisible(false);
             button_salir.setVisible(false);
             label_footer.setVisible(false);
             definirPanel(panel_LogIn);
@@ -93,15 +97,8 @@ public class Inicio extends JPanel implements ActionListener {
         add(button_leer_log);
         button_leer_log.addActionListener(this);
 
-        button_borrar_log = new JButton("Borrar historial");
-        button_borrar_log.setBounds(555, 420, 270, 35);
-        button_borrar_log.setBackground(Color.white);
-        button_borrar_log.setForeground(new Color(130, 15, 15));
-        button_borrar_log.setFont(new Font("Calibri", 1, 25));
-        add(button_borrar_log);
-
         button_salir = new JButton("Salir");
-        button_salir.setBounds(555, 490, 270, 35);
+        button_salir.setBounds(555, 420, 270, 35);
         button_salir.setBackground(Color.white);
         button_salir.setForeground(new Color(130, 15, 15));
         button_salir.setFont(new Font("Calibri", 1, 25));

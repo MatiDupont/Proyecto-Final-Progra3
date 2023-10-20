@@ -105,13 +105,6 @@ public class EleccionCartas extends JPanel implements ActionListener {
                 }
             }
             button_enter.setEnabled(false);
-            /*if (source == button_elfF || source == button_elfM || source == button_humanM || source == button_humanF || source == button_orcF || source == button_orcM){
-                source.setEnabled(false);
-                arr_chracter2[j] = Arrays.asList(buttons).indexOf(source);
-                j ++;
-                turno = 1;
-                validacion --;
-            }*/
         }
 
         if (validacion == 0) {
@@ -127,7 +120,6 @@ public class EleccionCartas extends JPanel implements ActionListener {
 
             setFocusable(true);
             requestFocus();
-            //getRootPane().setDefaultButton(button_start);
         }
     }
 

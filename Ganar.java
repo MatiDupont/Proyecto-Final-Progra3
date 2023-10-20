@@ -34,7 +34,7 @@ public class Ganar extends JPanel implements ActionListener {
 
     private void cargarImagenDeFondo() {
         try {
-            backgroundImage = ImageIO.read(new File("images\\wallpaper6.jpg"));
+            backgroundImage = ImageIO.read(new File("images\\wallpaper6.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +44,7 @@ public class Ganar extends JPanel implements ActionListener {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (backgroundImage != null) {
-            g.drawImage(backgroundImage, 0, 0, 1400, 1400, this);
+            g.drawImage(backgroundImage, 0, 0, 1400, 700, this);
         }
     }
 
@@ -146,7 +146,7 @@ public class Ganar extends JPanel implements ActionListener {
 
         panel_Inicio = new Inicio();
         scrollPane = new JScrollPane();
-        scrollPane.setBounds(0,0,1400,1400);
+        scrollPane.setBounds(-1,-1,1400,1400);
     }
 
     public void actionPerformed(ActionEvent e){

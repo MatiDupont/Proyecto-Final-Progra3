@@ -80,6 +80,7 @@ public class LogIn extends JPanel implements ActionListener {
                     ResultSet rs = pst.executeQuery();
 
                     if (rs.next()){
+                        panel_Inicio = new Inicio();
                         add(scrollPane);
                         label_usuario.setVisible(false);
                         textField_usuario.setVisible(false);
@@ -163,7 +164,6 @@ public class LogIn extends JPanel implements ActionListener {
         label_footer.setForeground(Color.white);
         add(label_footer);
 
-        panel_Inicio = new Inicio();
         scrollPane = new JScrollPane();
         scrollPane.setBounds(0,0,1400,1400);
     }

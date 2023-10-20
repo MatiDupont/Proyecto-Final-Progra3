@@ -16,6 +16,9 @@ public class VentanaPrincipal extends JFrame {
                 if (confirm == JOptionPane.YES_OPTION){
                     dispose();
                 }
+                else {
+                    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+                }
             }
         });
 

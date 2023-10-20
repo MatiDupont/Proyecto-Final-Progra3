@@ -8,10 +8,9 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Date;
 import java.util.Random;
 import conexionBBDD.Conexion;
 
@@ -30,7 +29,9 @@ public class Batalla extends JPanel implements ActionListener {
     public static String[] image, image2;
     private int total_ataques1 = 0, total_ataques2 = 0;
     private String habilidadSeleccionada = "";
+    String user;
     public Batalla(Elfo elfo1, Elfo elfo2, Humano humano1, Humano humano2, Orco orco1, Orco orco2){
+        user = LogIn.user;
         this.elf_m = elfo1;
         this.elf_f = elfo2;
         this.human_m = humano1;
@@ -50,6 +51,9 @@ public class Batalla extends JPanel implements ActionListener {
             button_attack.setEnabled(false);
             button_attack2.setEnabled(true);
         }
+
+        impresionPersonajes1(arrCards1);
+        impresionPersonajes2(arrCards2);
     }
 
     private void cargarImagenDeFondo() {
@@ -683,27 +687,10 @@ public class Batalla extends JPanel implements ActionListener {
         if (obj_in_arr){
             Personaje siguiente = siguientePersonaje(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
             if (siguiente == null){
+                insertarDatosTablaCartas();
                 panel_Ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
                 add(scrollPane);
-                label_title.setVisible(false);
-                label_player1.setVisible(false);
-                label_player2.setVisible(false);
-                button_chracter1.setVisible(false);
-                button_V1.setVisible(false);
-                button_D1.setVisible(false);
-                button_F1.setVisible(false);
-                button_N1.setVisible(false);
-                button_A1.setVisible(false);
-                button_attack.setVisible(false);
-                label_round.setVisible(false);
-                label_vs.setVisible(false);
-                button_chracter2.setVisible(false);
-                button_V2.setVisible(false);
-                button_D2.setVisible(false);
-                button_F2.setVisible(false);
-                button_N2.setVisible(false);
-                button_A2.setVisible(false);
-                button_attack2.setVisible(false);
+                deshabilitarComponentes();
                 definirPanel(panel_Ganar);
             }
             else {
@@ -725,27 +712,10 @@ public class Batalla extends JPanel implements ActionListener {
         else {
             Personaje siguiente = siguientePersonaje(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
             if (siguiente == null){
+                insertarDatosTablaCartas();
                 panel_Perder = new Perder();
                 add(scrollPane);
-                label_title.setVisible(false);
-                label_player1.setVisible(false);
-                label_player2.setVisible(false);
-                button_chracter1.setVisible(false);
-                button_V1.setVisible(false);
-                button_D1.setVisible(false);
-                button_F1.setVisible(false);
-                button_N1.setVisible(false);
-                button_A1.setVisible(false);
-                button_attack.setVisible(false);
-                label_round.setVisible(false);
-                label_vs.setVisible(false);
-                button_chracter2.setVisible(false);
-                button_V2.setVisible(false);
-                button_D2.setVisible(false);
-                button_F2.setVisible(false);
-                button_N2.setVisible(false);
-                button_A2.setVisible(false);
-                button_attack2.setVisible(false);
+                deshabilitarComponentes();
                 definirPanel(panel_Perder);
             }
             else {
@@ -845,11 +815,50 @@ public class Batalla extends JPanel implements ActionListener {
         JOptionPane.showMessageDialog(this, chracter2Info, "Información del Personaje", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    String cartasJ1 = "";
     private Personaje[] personajes1(int[] arr1){
         Personaje[] personajes1 = new Personaje[3];
         for (int i = 0; i < arr1.length; i++) {
-            cartasJ1.concat("-------- Personaje " + (i + 1) + " Jugador 1 --------\n");
+            if (arr1[i] == 0) {
+                personajes1[i] = elf_f;
+            } else if (arr1[i] == 1) {
+                personajes1[i] = elf_m;
+            } else if (arr1[i] == 2) {
+                personajes1[i] = human_m;
+            } else if (arr1[i] == 3) {
+                personajes1[i] = human_f;
+            } else if (arr1[i] == 4) {
+                personajes1[i] = orc_f;
+            } else if (arr1[i] == 5) {
+                personajes1[i] = orc_m;
+            }
+        }
+        return personajes1;
+    }
+    private Personaje[] personajes2(int[] arr2){
+        Personaje[] personajes2 = new Personaje[3];
+        for (int i = 0; i < arr2.length; i++) {
+            if (arr2[i] == 0) {
+                personajes2[i] = elf_f;
+            } else if (arr2[i] == 1) {
+                personajes2[i] = elf_m;
+            } else if (arr2[i] == 2) {
+                personajes2[i] = human_m;
+            } else if (arr2[i] == 3) {
+                personajes2[i] = human_f;
+            } else if (arr2[i] == 4) {
+                personajes2[i] = orc_f;
+            } else if (arr2[i] == 5) {
+                personajes2[i] = orc_m;
+            }
+        }
+        return personajes2;
+    }
+
+    StringBuilder cartasJ1 = new StringBuilder();
+    private void impresionPersonajes1(int[] arr1) {
+        Personaje[] personajes1 = new Personaje[3];
+        for (int i = 0; i < arr1.length; i++) {
+            cartasJ1.append("-------- Personaje ").append(i + 1).append(" Jugador 1 --------\n");
             if (arr1[i] == 0) {
                 personajes1[i] = elf_f;
             } else if (arr1[i] == 1) {
@@ -864,26 +873,25 @@ public class Batalla extends JPanel implements ActionListener {
                 personajes1[i] = orc_m;
             }
 
-            cartasJ1.concat("Nombre: " + personajes1[i].getNombre() + "\n\n" +
-                    "           Caracteristicas" + "\n\n" +
-                    "Apodo: " + personajes1[i].getApodo() + "\n" +
-                    "Edad: " + personajes1[i].getEdad() + "\n" +
-                    "Raza: " + personajes1[i].getRaza() + "\n" +
-                    "Salud: " + personajes1[i].getSalud() + "\n" +
-                    "Velocidad: " + personajes1[i].getVelocidad() + "\n" +
-                    "Destreza: " + personajes1[i].getDestreza() + "\n" +
-                    "Fuerza: " + personajes1[i].getFuerza() + "\n" +
-                    "Nivel: " + personajes1[i].getNivel() + "\n" +
-                    "Armadura: " + personajes1[i].getArmadura() + "\n" +
-                    "Efectividad de Disparo: " + personajes1[i].getEfectividadDisparo() + "\n\n");
+            cartasJ1.append("Nombre: ").append(personajes1[i].getNombre()).append("\n\n")
+                    .append("           Caracteristicas").append("\n\n")
+                    .append("Apodo: ").append(personajes1[i].getApodo()).append("\n")
+                    .append("Edad: ").append(personajes1[i].getEdad()).append("\n")
+                    .append("Raza: ").append(personajes1[i].getRaza()).append("\n")
+                    .append("Salud: ").append(personajes1[i].getSalud()).append("\n")
+                    .append("Velocidad: ").append(personajes1[i].getVelocidad()).append("\n")
+                    .append("Destreza: ").append(personajes1[i].getDestreza()).append("\n")
+                    .append("Fuerza: ").append(personajes1[i].getFuerza()).append("\n")
+                    .append("Nivel: ").append(personajes1[i].getNivel()).append("\n")
+                    .append("Armadura: ").append(personajes1[i].getArmadura()).append("\n")
+                    .append("Efectividad de Disparo: ").append(personajes1[i].getEfectividadDisparo()).append("\n\n");
         }
-        return personajes1;
     }
-    String cartasJ2 = "";
-    private Personaje[] personajes2(int[] arr2){
+    StringBuilder cartasJ2 = new StringBuilder();
+    public void impresionPersonajes2(int[] arr2) {
         Personaje[] personajes2 = new Personaje[3];
         for (int i = 0; i < arr2.length; i++) {
-            cartasJ2.concat("-------- Personaje " + (i + 1) + " Jugador 2 --------\n");
+            cartasJ2.append("-------- Personaje ").append(i + 1).append(" Jugador 2 --------\n");
             if (arr2[i] == 0) {
                 personajes2[i] = elf_f;
             } else if (arr2[i] == 1) {
@@ -898,44 +906,43 @@ public class Batalla extends JPanel implements ActionListener {
                 personajes2[i] = orc_m;
             }
 
-            cartasJ2.concat("Nombre: " + personajes2[i].getNombre() + "\n\n" +
-            "           Caracteristicas" + "\n\n" +
-            "Apodo: " + personajes2[i].getApodo() + "\n" +
-            "Edad: " + personajes2[i].getEdad() + "\n" +
-            "Raza: " + personajes2[i].getRaza() + "\n" +
-            "Salud: " + personajes2[i].getSalud() + "\n" +
-            "Velocidad: " + personajes2[i].getVelocidad() + "\n" +
-            "Destreza: " + personajes2[i].getDestreza() + "\n" +
-            "Fuerza: " + personajes2[i].getFuerza() + "\n" +
-            "Nivel: " + personajes2[i].getNivel() + "\n" +
-            "Armadura: " + personajes2[i].getArmadura() + "\n" +
-            "Efectividad de Disparo: " + personajes2[i].getEfectividadDisparo() + "\n\n");
+            cartasJ2.append("Nombre: ").append(personajes2[i].getNombre()).append("\n\n")
+                    .append("           Caracteristicas").append("\n\n")
+                    .append("Apodo: ").append(personajes2[i].getApodo()).append("\n")
+                    .append("Edad: ").append(personajes2[i].getEdad()).append("\n")
+                    .append("Raza: ").append(personajes2[i].getRaza()).append("\n")
+                    .append("Salud: ").append(personajes2[i].getSalud()).append("\n")
+                    .append("Velocidad: ").append(personajes2[i].getVelocidad()).append("\n")
+                    .append("Destreza: ").append(personajes2[i].getDestreza()).append("\n")
+                    .append("Fuerza: ").append(personajes2[i].getFuerza()).append("\n")
+                    .append("Nivel: ").append(personajes2[i].getNivel()).append("\n")
+                    .append("Armadura: ").append(personajes2[i].getArmadura()).append("\n")
+                    .append("Efectividad de Disparo: ").append(personajes2[i].getEfectividadDisparo()).append("\n\n");
         }
-        insertarDatosTablaCartas();
-        return personajes2;
     }
+
     private void insertarDatosTablaCartas(){
         try {
             Connection cn = Conexion.conectar();
-            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?)");
-            LocalDateTime ahora = LocalDateTime.now();
-            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-            String fechaHoraFormateada = ahora.format(formato);
-            JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);
+            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?,?)");
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+            //JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);
 
             pst.setInt(1,0);
-            pst.setString(2, cartasJ1);
-            pst.setString(3, cartasJ2);
-            pst.setString(4, fechaHoraFormateada);
+            pst.setString(2, String.valueOf(cartasJ1));
+            pst.setString(3, String.valueOf(cartasJ2));
+            pst.setTimestamp(4, timestamp);
+            pst.setString(5, user);
 
             pst.executeUpdate();
-            cn.close();
-
             JOptionPane.showMessageDialog(null, "Datos registrados exitosamente.");
 
+            cn.close();
         }
         catch (SQLException exception){
             JOptionPane.showMessageDialog(null, "Error al insertar los datos en la tabla cartas " + exception.getMessage());
+            System.err.println(exception);
         }
     }
 
@@ -945,5 +952,28 @@ public class Batalla extends JPanel implements ActionListener {
 
     private void definirPanel(Ganar panel) {
         scrollPane.setViewportView(panel);
+    }
+
+    private void deshabilitarComponentes() {
+        label_title.setVisible(false);
+        label_player1.setVisible(false);
+        label_player2.setVisible(false);
+        button_chracter1.setVisible(false);
+        button_V1.setVisible(false);
+        button_D1.setVisible(false);
+        button_F1.setVisible(false);
+        button_N1.setVisible(false);
+        button_A1.setVisible(false);
+        button_attack.setVisible(false);
+        label_round.setVisible(false);
+        label_vs.setVisible(false);
+        button_chracter2.setVisible(false);
+        button_V2.setVisible(false);
+        button_D2.setVisible(false);
+        button_F2.setVisible(false);
+        button_N2.setVisible(false);
+        button_A2.setVisible(false);
+        button_attack2.setVisible(false);
+        label_footer.setVisible(false);
     }
 }

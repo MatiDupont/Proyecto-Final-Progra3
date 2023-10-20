@@ -1,47 +1,25 @@
+import conexionBBDD.Conexion;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Objects;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class Historial extends JFrame {
+public class Historial extends JFrame implements ActionListener {
     private JLabel label_wallpaper, label_titulo, label_footer;
     private JTextPane textPane_resume;
     private JScrollPane scrollPane;
-    String user;
-    public static String gameplay = "Se generaron 6 personajes:\n" +
-            "--------Personaje 1 Jugador 1-------\n" +
-            "nombre: Uhov, Tipo : Troll, Apodo:Chanerium , Velocidad: 8, …etc\n" +
-            "…..\n" +
-            "--------Personaje 2 Jugador 1 -------\n" +
-            "nombre: Rand, Tipo : Wizard, Apodo:Trumer , Velocidad: 1, …etc\n" +
-            "…\n" +
-            "\n" +
-            "Chanerium ataca a XXXX y le quita 20 de salud. XXXX queda con 80 de salud.\n" +
-            "XXXX ataca a Chanerium y le quita 12 de saluds. Chanerium queda con 88 de salud.\n" +
-            "Chanerium ataca a XXXX y le quita ….\n" +
-            "….\n" +
-            "Muere XXXX.\n" +
-            "Chanerium gana 10 de salud como premio, quedando con 90 de salud.\n" +
-            "Ronda 2\n" +
-            "Empieza atacando Jugador 2 por perder la ronda 1.\n" +
-            "El sistema eligió al personaje Trumer del jugador 1 y al personaje YYYY del Jugador 2 para\n" +
-            "que se enfrenten en esta ronda.\n" +
-            "YYYY ataca a Trumer y le quita 2 de salud. Trumer queda con 98 de salud\n" +
-            "….\n" +
-            "Ronda X\n" +
-            "…..\n" +
-            "Gana Jugador 2, le quedo/aron vivos los sgtes. personajes:\n" +
-            "…………\n" +
-            "Felicitaciones Jugador 2 , las fuerzas mágicas del universo luz te abrazan!\n" +
-            "Fin.\n";
+    private JButton button_borrar_log;
+    private boolean historialVacio = true;
+    private static int ultimoGame = 1;
     public Historial(){
-        user = LogIn.user;
         setLayout(null);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Historial del jugador - " + user);
+        setTitle("Historial del jugador - " + LogIn.user + " -");
         setIconImage(new ImageIcon(Objects.requireNonNull(getClass().getResource("images\\wallpaper7.jpg"))).getImage());
 
         iniciarComponentes();
@@ -52,6 +30,56 @@ public class Historial extends JFrame {
         this.setLocationRelativeTo(null);
     }
 
+    public String imprimirDatosTabla() {
+        StringBuilder gameplay = new StringBuilder();
+        try {
+            Connection cn = Conexion.conectar();
+            PreparedStatement pst = cn.prepareStatement("select * from cartas where usuario = '" + LogIn.user + "' and id_juego >= '" + ultimoGame + "'");
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                int id_juego = rs.getInt("id_juego");
+                String cartasJ1 = rs.getString("cartasJ1");
+                String cartasJ2 = rs.getString("cartasJ2");
+                String fecha_hora = rs.getString("fecha_hora");
+
+                gameplay.append("---------------------------------------------------------------------------------\nEl dia ").append(fecha_hora).append(" se desarrolló el juego ").append(id_juego).append(".\n---------------------------------------------------------------------------------\n");
+                String infoJuego = "\n                 Se eligieron los siguientes personajes: \n" +
+                            cartasJ1 + cartasJ2;
+
+                gameplay.append(infoJuego);
+                historialVacio = false;
+            }
+
+            cn.close();
+        } catch (SQLException exception) {
+            JOptionPane.showMessageDialog(null, "Error al mostrar los datos de la tabla cartas " + exception.getMessage());
+        }
+
+        return gameplay.toString();
+    }
+
+    private void incrementarContadorJuego() {
+        try {
+            Connection cn2 = Conexion.conectar();
+            PreparedStatement pst2 = cn2.prepareStatement("select max(id_juego) from cartas");
+
+            ResultSet rs2 = pst2.executeQuery();
+
+            if (rs2.next()) {
+                ultimoGame = rs2.getInt(1);
+                //JOptionPane.showMessageDialog(null, ultimoGame);
+            }
+
+            ultimoGame += 1;
+
+            cn2.close();
+        }
+        catch (SQLException exception) {
+            JOptionPane.showMessageDialog(null, "Error al mostrar el maximo del id_juego " + exception.getMessage());
+        }
+    }
     private void iniciarComponentes() {
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(800,500));
@@ -70,12 +98,22 @@ public class Historial extends JFrame {
         layeredPane.add(label_titulo, Integer.valueOf(1));
 
         textPane_resume = new JTextPane();
-        textPane_resume.setText(gameplay);
-        textPane_resume.setFont(new Font("Arial",1,25));
+        textPane_resume.setText(imprimirDatosTabla());
+        textPane_resume.setFont(new Font("Arial",1,20));
+        textPane_resume.setForeground(Color.RED);
+        textPane_resume.setBackground(Color.BLACK);
         textPane_resume.setEditable(false);
         scrollPane = new JScrollPane(textPane_resume);
-        scrollPane.setBounds(100,120,600,270);
+        scrollPane.setBounds(105,100,570,270);
         layeredPane.add(scrollPane, Integer.valueOf(1));
+
+        button_borrar_log = new JButton("Borrar historial");
+        button_borrar_log.setBounds(300, 400, 220, 35);
+        button_borrar_log.setBackground(Color.white);
+        button_borrar_log.setForeground(new Color(130, 15, 15));
+        button_borrar_log.setFont(new Font("Calibri", 1, 25));
+        layeredPane.add(button_borrar_log, Integer.valueOf(1));
+        button_borrar_log.addActionListener(this);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
         label_footer.setBounds(320,440,210,20);
@@ -84,4 +122,22 @@ public class Historial extends JFrame {
 
         setContentPane(layeredPane);
     }
+
+    public JTextPane getTextPane_resume() {
+        return textPane_resume;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == button_borrar_log){
+            incrementarContadorJuego();
+            getTextPane_resume().setText("");
+            historialVacio = true;
+            JOptionPane.showMessageDialog(null, "Historial borrado exitosamente.");
+        }
+    }
+
+    public boolean isHistorialVacio() {
+        return historialVacio;
+    }
+
 }

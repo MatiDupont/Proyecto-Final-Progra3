@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.sql.*;
@@ -17,6 +18,7 @@ public class Batalla extends JPanel implements ActionListener {
     private Orco orc_m, orc_f;
     private BufferedImage backgroundImage;
     private JScrollPane scrollPane;
+    private JTextArea textArea_command;
     private Perder panel_Perder;
     private Ganar panel_Ganar;
     private JLabel label_title, label_player1, label_player2, label_round, label_vs, label_footer, label_arrC1, label_arrC2;
@@ -53,6 +55,34 @@ public class Batalla extends JPanel implements ActionListener {
 
         impresionPersonajes1(arrCards1);
         impresionPersonajes2(arrCards2);
+
+        addKeyBindings();
+    }
+
+    private void addKeyBindings() {
+        int condition = JComponent.WHEN_IN_FOCUSED_WINDOW;
+        InputMap inputMap = getInputMap(condition);
+        ActionMap actionMap = getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.ALT_DOWN_MASK), "atacar");
+        actionMap.put("atacar", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (turno == 1 && button_attack.isEnabled()) {
+                    button_attack.doClick();
+                }
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.ALT_DOWN_MASK), "defender");
+        actionMap.put("defender", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (turno == 2 && button_attack2.isEnabled()) {
+                    button_attack2.doClick();
+                }
+            }
+        });
     }
 
     private void cargarImagenDeFondo() {
@@ -206,6 +236,14 @@ public class Batalla extends JPanel implements ActionListener {
         gameplay.append("\n\n##################################################");
         gameplay.append("ROUND - ").append(round).append(" -");
         gameplay.append("##################################################");
+        if (turno == 1){
+            gameplay.append("\nEl sistema eligio al personaje ").append(personajes1(arrCards1)[indicePersonaje1]).append(" del jugador 1 y al personaje ")
+                    .append(personajes2(arrCards2)[indicePersonaje2]).append(" del jugador 2 para que se enfrenten en esta ronda.\n");
+        }
+        else {
+            gameplay.append("\nEl sistema eligio al personaje ").append(personajes2(arrCards2)[indicePersonaje2]).append(" del jugador 2 y al personaje ")
+                    .append(personajes1(arrCards1)[indicePersonaje1]).append(" del jugador 1 para que se enfrenten en esta ronda.\n");
+        }
         gameplay.append("Empieza atacando el jugador ").append(turno).append("\n");
         label_round.setBounds(505,150,270,40);
         label_round.setForeground(Color.white);
@@ -217,6 +255,19 @@ public class Batalla extends JPanel implements ActionListener {
         label_vs.setForeground(Color.white);
         label_vs.setFont(new Font("Lucida Console",1,70));
         add(label_vs);
+
+        textArea_command = new JTextArea();
+        if (turno == 1) {
+            textArea_command.setText("Presione Alt + A para atacar");
+        }
+        else {
+            textArea_command.setText("Presione Alt + D para defender");
+        }
+        textArea_command.setEditable(false);
+        textArea_command.setForeground(new Color(130,15,78));
+        textArea_command.setBounds(450,485,370,30);
+        textArea_command.setFont(new Font("Britannic Bold",4,27));
+        add(textArea_command);
 
         image2 = new String[3];
 
@@ -409,6 +460,7 @@ public class Batalla extends JPanel implements ActionListener {
             }
             else {
                 turno = 2;
+                textArea_command.setText("Presione Alt + D para defender");
                 button_attack.setEnabled(false);
                 button_attack2.setEnabled(true);
             }
@@ -421,9 +473,11 @@ public class Batalla extends JPanel implements ActionListener {
             if (!estado){
                 button_attack2.setEnabled(false);
                 button_attack.setEnabled(false);
+                textArea_command.setText("Presione Alt + A para atacar");
             }
             else {
                 turno = 1;
+                textArea_command.setText("Presione Alt + A para atacar");
                 button_attack2.setEnabled(false);
                 button_attack.setEnabled(true);
             }
@@ -756,6 +810,16 @@ public class Batalla extends JPanel implements ActionListener {
         if (obj_in_arr){
             Personaje siguiente = siguientePersonaje(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
             if (siguiente == null){
+                gameplay.append("Gana Jugador 1, le quedo/aron vivo/s los siguientes personajes: \n");
+                for (int i = 0; i < arrCards1.length; i++){
+                    if (estadoCarta(personajes1(arrCards1),i)) {
+                        gameplay.append("--> ").append(personajes1(arrCards1)[i]).append(" <-- \n");
+                    }
+                }
+                gameplay.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                gameplay.append("Felicitaciones Jugador 1, las fuerzas mágicas del universo luz te abrazan!\n");
+                gameplay.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                gameplay.append("FIN");
                 insertarDatosTablaCartas();
                 guardarRegistroAtaque();
                 panel_Ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
@@ -774,14 +838,27 @@ public class Batalla extends JPanel implements ActionListener {
                 button_attack2.setEnabled(true);
                 total_ataques1 = 0;
                 total_ataques2 = 0;
-                button_attack.setText("Attack");
-                button_attack2.setText("Attack");
                 indicePersonaje2 += 1;
+                turno = 2;
+                textArea_command.setText("Presione Alt + D para defender");
+                gameplay.append("\nEmpieza atacando Jugador 2 por perder la ronda ").append(round).append("\n");
+                gameplay.append("El sistema elegio al personaje ").append(personajes2(arrCards2)[indicePersonaje2]).append(" del jugador 2 y al personaje ")
+                        .append(personajes1(arrCards1)[indicePersonaje1]).append(" del jugador 1 para que se enfrenten en esta ronda.\n");
             }
         }
         else {
             Personaje siguiente = siguientePersonaje(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
             if (siguiente == null){
+                gameplay.append("Gana Jugador 2, le quedo/aron vivo/s los siguientes personajes: \n");
+                for (int i = 0; i < arrCards2.length; i++) {
+                    if (estadoCarta(personajes2(arrCards2),i)){
+                        gameplay.append("--> ").append(personajes2(arrCards2)[i]).append(" <-- \n");
+                    }
+                }
+                gameplay.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                gameplay.append("Felicitaciones Jugador 2, las fuerzas mágicas del universo luz te abrazan!\n");
+                gameplay.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                gameplay.append("FIN");
                 insertarDatosTablaCartas();
                 guardarRegistroAtaque();
                 panel_Perder = new Perder();
@@ -800,9 +877,12 @@ public class Batalla extends JPanel implements ActionListener {
                 button_attack.setEnabled(true);
                 total_ataques1 = 0;
                 total_ataques2 = 0;
-                button_attack.setText("Attack");
-                button_attack2.setText("Attack");
                 indicePersonaje1 += 1;
+                turno = 1;
+                textArea_command.setText("Presione Alt + A para atacar");
+                gameplay.append("\nEmpieza atacando Jugador 1 por perder la ronda ").append(round).append("\n");
+                gameplay.append("El sistema eligio al personaje ").append(personajes1(arrCards1)[indicePersonaje1]).append(" del jugador 1 y al personaje ")
+                        .append(personajes2(arrCards2)[indicePersonaje2]).append(" del jugador 2 para que se enfrenten en esta ronda.\n");
             }
         }
         label_round.setText("ROUND - " + (round += 1) + " -");
@@ -1027,7 +1107,7 @@ public class Batalla extends JPanel implements ActionListener {
     private void insertarDatosTablaCartas(){
         try {
             Connection cn = Conexion.conectar();
-            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?,?,?)");
+            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?,?,?,true)");
             Date date = new Date();
             Timestamp timestamp = new Timestamp(date.getTime());
             //JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);

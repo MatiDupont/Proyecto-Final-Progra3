@@ -5,10 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -30,7 +27,9 @@ public class Batalla extends JPanel implements ActionListener {
     private int total_ataques1 = 0, total_ataques2 = 0;
     private String habilidadSeleccionada = "";
     String user;
+    StringBuilder gameplay;
     public Batalla(Elfo elfo1, Elfo elfo2, Humano humano1, Humano humano2, Orco orco1, Orco orco2){
+        gameplay = new StringBuilder();
         user = LogIn.user;
         this.elf_m = elfo1;
         this.elf_f = elfo2;
@@ -204,6 +203,10 @@ public class Batalla extends JPanel implements ActionListener {
         button_attack.addActionListener(this);
 
         label_round = new JLabel("ROUND - " + round + " -");
+        gameplay.append("\n\n##################################################");
+        gameplay.append("ROUND - ").append(round).append(" -");
+        gameplay.append("##################################################");
+        gameplay.append("Empieza atacando el jugador ").append(turno).append("\n");
         label_round.setBounds(505,150,270,40);
         label_round.setForeground(Color.white);
         label_round.setFont(new Font("Times New Roman",2,50));
@@ -293,34 +296,8 @@ public class Batalla extends JPanel implements ActionListener {
         button_attack2.setBackground(Color.white);
         button_attack2.setForeground(new Color(135,15,15));
         button_attack2.setFont(new Font("Calibri",1,18));
-        //button_attack2.setEnabled(false);
         add(button_attack2);
         button_attack2.addActionListener(this);
-
-        label_arrC1 = new JLabel();
-        label_arrC1.setBounds(575,500,200,30);
-        label_arrC1.setForeground(Color.white);
-        label_arrC1.setFont(new Font("Arial",1,18));
-        //add(label_arrC1);
-
-        label_arrC2 = new JLabel();
-        label_arrC2.setBounds(575,550,200,30);
-        label_arrC2.setForeground(Color.white);
-        label_arrC2.setFont(new Font("Arial",1,18));
-        //add(label_arrC2);
-
-        String textArrChracter1 = "Player 1: ";
-        for (int value : arrCards1) {
-            textArrChracter1 += value + " ";
-        }
-
-        String textArrChracter2 = "Player 2: ";
-        for (int value : arrCards2) {
-            textArrChracter2 += value + " ";
-        }
-
-        label_arrC1.setText(textArrChracter1);
-        label_arrC2.setText(textArrChracter2);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
         label_footer.setBounds(575,610,210,20);
@@ -346,7 +323,8 @@ public class Batalla extends JPanel implements ActionListener {
 
         atacante[indicePersonaje1].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        JOptionPane.showMessageDialog(null,"Ataque N° " + total_ataques1 + " del jugador 1.\n" + atacante[indicePersonaje1].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje2].getNombre());
+        gameplay.append("--> Ataque N° ").append(total_ataques1).append(" del jugador 1.\n").append(atacante[indicePersonaje1].getNombre()).append(" le quito ").append(attack).append(" de salud a ").append(defensor[indicePersonaje2].getNombre()).append(" dejandole ").append(defensor[indicePersonaje2].getSalud()).append(" de vida <--\n");
+        //JOptionPane.showMessageDialog(null,"Ataque N° " + total_ataques1 + " del jugador 1.\n" + atacante[indicePersonaje1].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje2].getNombre());
         defensor[indicePersonaje2].setSalud(defensor[indicePersonaje2].getSalud() - attack);
     }
 
@@ -365,8 +343,31 @@ public class Batalla extends JPanel implements ActionListener {
 
         atacante[indicePersonaje2].setEfectividadDisparo((random.nextInt(100) + 1) / 100.0);
 
-        JOptionPane.showMessageDialog(null, "Ataque N° " + total_ataques2 + " del jugador 2.\n" + atacante[indicePersonaje2].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje1].getNombre());
+        gameplay.append("--> Ataque N° ").append(total_ataques2).append(" del jugador 2.\n").append(atacante[indicePersonaje2].getNombre()).append(" le quito ").append(attack).append(" de salud a ").append(defensor[indicePersonaje1].getNombre()).append(" dejandole ").append(defensor[indicePersonaje1].getSalud()).append(" de vida <--\n");
+        //JOptionPane.showMessageDialog(null, "Ataque N° " + total_ataques2 + " del jugador 2.\n" + atacante[indicePersonaje2].getNombre() + " le quito " + attack + " de salud a " + defensor[indicePersonaje1].getNombre());
         defensor[indicePersonaje1].setSalud(defensor[indicePersonaje1].getSalud() - attack);
+    }
+
+    private void guardarRegistroAtaque() {
+        try {
+            Connection cn = Conexion.conectar();
+            PreparedStatement pst = cn.prepareStatement("insert into batalla values (?,?,?,?,?)");
+
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+
+            pst.setInt(1,0);
+            pst.setInt(2,obtenerIdJuego());
+            pst.setString(3, String.valueOf(gameplay));
+            pst.setTimestamp(4,timestamp);
+            pst.setString(5,user);
+            pst.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Datos de la batalla registrados exitosamente.");
+
+            cn.close();
+        } catch (SQLException exception) {
+            JOptionPane.showMessageDialog(null, "Error al intentar guardar los registros del ataque 1. " + exception.getMessage());
+        }
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -378,27 +379,23 @@ public class Batalla extends JPanel implements ActionListener {
         }
         if (e.getSource() == button_V2 || e.getSource() == button_D2 || e.getSource() == button_F2 || e.getSource() == button_N2 || e.getSource() == button_A2) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
-            JOptionPane.showMessageDialog(null, habilidadSeleccionada);
+            //JOptionPane.showMessageDialog(null, habilidadSeleccionada);
             modificarHabilidad(personajes2(arrCards2), indicePersonaje2, habilidadSeleccionada);
             button_V2.setEnabled(false);
             button_D2.setEnabled(false);
             button_F2.setEnabled(false);
             button_N2.setEnabled(false);
             button_A2.setEnabled(false);
-
-            //personajeVivosJ1(personajes1(arrCards1));
         }
         if (e.getSource() == button_V1 || e.getSource() == button_D1 || e.getSource() == button_F1 || e.getSource() == button_N1 || e.getSource() == button_A1) {
             habilidadSeleccionada = getHabilidadDesdeBoton(e.getSource());
-            JOptionPane.showMessageDialog(null, habilidadSeleccionada);
+            //JOptionPane.showMessageDialog(null, habilidadSeleccionada);
             modificarHabilidad(personajes1(arrCards1), indicePersonaje1, habilidadSeleccionada);
             button_V1.setEnabled(false);
             button_D1.setEnabled(false);
             button_F1.setEnabled(false);
             button_N1.setEnabled(false);
             button_A1.setEnabled(false);
-
-            //personajeVivosJ2(personajes2(arrCards2));
         }
 
         if (e.getSource() == button_attack){
@@ -437,7 +434,10 @@ public class Batalla extends JPanel implements ActionListener {
         boolean vivo = true;
         if (personajes[indicePersonaje].getSalud() <= 0){
             vivo = false;
-            JOptionPane.showMessageDialog(null, personajes[indicePersonaje].getNombre() + " murio.");
+            gameplay.append("\n=======================================================");
+            gameplay.append(personajes[indicePersonaje].getNombre() + " murio.\n");
+            gameplay.append("=======================================================");
+            //JOptionPane.showMessageDialog(null, personajes[indicePersonaje].getNombre() + " murio.");
 
             //Personaje siguientePersonaje = null;
             if (elementoEnArreglo(personajes[indicePersonaje], personajes1(arrCards1))){
@@ -448,8 +448,6 @@ public class Batalla extends JPanel implements ActionListener {
                 button_F2.setEnabled(true);
                 button_N2.setEnabled(true);
                 button_A2.setEnabled(true);
-
-                //siguientePersonaje = actualizarSiguientePersonaje(personajes1(arrCards1));
             }
             else if (elementoEnArreglo(personajes[indicePersonaje], personajes2(arrCards2))){
                 button_chracter1.setBackground(new Color(0,255,0));
@@ -459,18 +457,7 @@ public class Batalla extends JPanel implements ActionListener {
                 button_F1.setEnabled(true);
                 button_N1.setEnabled(true);
                 button_A1.setEnabled(true);
-
-                //siguientePersonaje = actualizarSiguientePersonaje(personajes2(arrCards2));
             }
-
-            //personajes[0] = siguientePersonaje;
-           /* if (siguientePersonaje != null){
-                personajes[0] = siguientePersonaje;
-                JOptionPane.showMessageDialog(null, "Cambio de personaje " + personajes[0].getNombre());
-            }
-            else {
-                JOptionPane.showMessageDialog(null, "El jugador ha perdido." );
-            }*/
         }
         return vivo;
     }
@@ -485,10 +472,13 @@ public class Batalla extends JPanel implements ActionListener {
     }
 
     private void modificarHabilidad(Personaje[] personajes, int indice, String habilidad){
+        gameplay.append(personajes[indice]).append(" obtiene la posibilidad de poder mejorar una de sus habilidades.\n");
+
         if (habilidad.equals("Velocidad")) {
             if (personajes[indice].getVelocidad() == 10){
                 boolean flag = true;
                 while (flag){
+                    gameplay.append("Velocidad ya está en su nivel máximo. ¿Desea elegir otra habilidad?\n\n");
                     int opcion = JOptionPane.showConfirmDialog(null, "Velocidad ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
                     if (opcion == JOptionPane.YES_OPTION){
                         String nuevaHabilidad = elegirOtraHabilidad();
@@ -496,21 +486,33 @@ public class Batalla extends JPanel implements ActionListener {
                             case "Destreza": {
                                 personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Destreza aumentada (+1). --> ").append(personajes[indice].getDestreza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Fuerza": {
                                 personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Fuerza aumentada (+1). --> ").append(personajes[indice].getFuerza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Nivel": {
                                 personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Nivel aumentado (+1). --> ").append(personajes[indice].getNivel()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Armadura": {
                                 personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Armadura aumentada (+1). --> ").append(personajes[indice].getArmadura()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             default:{
@@ -522,12 +524,16 @@ public class Batalla extends JPanel implements ActionListener {
             }
             else {
                 personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
-                JOptionPane.showMessageDialog(null, "Velocidad aumentada.");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                gameplay.append("Velocidad aumentada (+1). --> ").append(personajes[indice].getVelocidad()).append(" <--");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+                //JOptionPane.showMessageDialog(null, "Velocidad aumentada.");
             }
         } else if (habilidad.equals("Destreza")) {
             if (personajes[indice].getDestreza() == 5){
                 boolean flag = true;
                 while (flag){
+                    gameplay.append("Destreza ya está en su nivel máximo. ¿Desea elegir otra habilidad?\n\n");
                     int opcion = JOptionPane.showConfirmDialog(null, "Destreza ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
                     if (opcion == JOptionPane.YES_OPTION){
                         String nuevaHabilidad = elegirOtraHabilidad();
@@ -535,21 +541,33 @@ public class Batalla extends JPanel implements ActionListener {
                             case "Velocidad": {
                                 personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Velocidad aumentada (+1). --> ").append(personajes[indice].getVelocidad()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Fuerza": {
                                 personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Fuerza aumentada (+1). --> ").append(personajes[indice].getFuerza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Nivel": {
                                 personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Nivel aumentado (+1). --> ").append(personajes[indice].getNivel()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Armadura": {
                                 personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Armadura aumentada (+1). --> ").append(personajes[indice].getArmadura()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             default:{
@@ -561,12 +579,16 @@ public class Batalla extends JPanel implements ActionListener {
             }
             else {
                 personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
-                JOptionPane.showMessageDialog(null, "Destreza aumentada.");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                gameplay.append("Destreza aumentada (+1). --> ").append(personajes[indice].getDestreza()).append(" <--");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+                //JOptionPane.showMessageDialog(null, "Destreza aumentada.");
             }
         } else if (habilidad.equals("Fuerza")) {
             if (personajes[indice].getFuerza() == 10){
                 boolean flag = true;
                 while (flag){
+                    gameplay.append("Fuerza ya está en su nivel máximo. ¿Desea elegir otra habilidad?\n\n");
                     int opcion = JOptionPane.showConfirmDialog(null, "Fuerza ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
                     if (opcion == JOptionPane.YES_OPTION){
                         String nuevaHabilidad = elegirOtraHabilidad();
@@ -574,21 +596,33 @@ public class Batalla extends JPanel implements ActionListener {
                             case "Velocidad": {
                                 personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Velocidad aumentada (+1). --> ").append(personajes[indice].getVelocidad()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Destreza": {
                                 personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Destreza aumentada (+1). --> ").append(personajes[indice].getDestreza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Nivel": {
                                 personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Nivel aumentado (+1). --> ").append(personajes[indice].getNivel()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Armadura": {
                                 personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Armadura aumentada (+1). --> ").append(personajes[indice].getArmadura()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             default:{
@@ -600,12 +634,16 @@ public class Batalla extends JPanel implements ActionListener {
             }
             else {
                 personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
-                JOptionPane.showMessageDialog(null, "Fuerza aumentada.");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                gameplay.append("Fuerza aumentada (+1). --> ").append(personajes[indice].getFuerza()).append(" <--");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+                //JOptionPane.showMessageDialog(null, "Fuerza aumentada.");
             }
         } else if (habilidad.equals("Nivel")) {
             if (personajes[indice].getNivel() == 10){
                 boolean flag = true;
                 while (flag){
+                    gameplay.append("Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?\n\n");
                     int opcion = JOptionPane.showConfirmDialog(null, "Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
                     if (opcion == JOptionPane.YES_OPTION){
                         String nuevaHabilidad = elegirOtraHabilidad();
@@ -613,21 +651,33 @@ public class Batalla extends JPanel implements ActionListener {
                             case "Velocidad": {
                                 personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Velocidad aumentada (+1). --> ").append(personajes[indice].getVelocidad()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Destreza": {
                                 personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Destreza aumentada (+1). --> ").append(personajes[indice].getDestreza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Fuerza": {
                                 personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Fuerza aumentada (+1). --> ").append(personajes[indice].getFuerza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Armadura": {
                                 personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Armadura aumentada (+1). --> ").append(personajes[indice].getArmadura()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             default:{
@@ -639,34 +689,50 @@ public class Batalla extends JPanel implements ActionListener {
             }
             else {
                 personajes[indice].setNivel(personajes[indice].getNivel() + 1);
-                JOptionPane.showMessageDialog(null, "Nivel aumentado.");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                gameplay.append("Nivel aumentado (+1). --> ").append(personajes[indice].getNivel()).append(" <--");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+                //JOptionPane.showMessageDialog(null, "Nivel aumentado.");
             }
         } else if (habilidad.equals("Armadura")) {
             if (personajes[indice].getArmadura() == 10){
                 boolean flag = true;
                 while (flag){
-                    int opcion = JOptionPane.showConfirmDialog(null, "Nivel ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
+                    gameplay.append("Armadura ya está en su nivel máximo. ¿Desea elegir otra habilidad?\n\n");
+                    int opcion = JOptionPane.showConfirmDialog(null, "Armadura ya está en su nivel máximo. ¿Desea elegir otra habilidad?", "Habilidad en su Nivel Máximo", JOptionPane.YES_NO_OPTION);
                     if (opcion == JOptionPane.YES_OPTION){
                         String nuevaHabilidad = elegirOtraHabilidad();
                         switch (nuevaHabilidad){
                             case "Velocidad": {
                                 personajes[indice].setVelocidad(personajes[indice].getVelocidad() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Velocidad aumentada (+1). --> ").append(personajes[indice].getVelocidad()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Destreza": {
                                 personajes[indice].setDestreza(personajes[indice].getDestreza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Destreza aumentada (+1). --> ").append(personajes[indice].getDestreza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Fuerza": {
                                 personajes[indice].setFuerza(personajes[indice].getFuerza() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Fuerza aumentada (+1). --> ").append(personajes[indice].getFuerza()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             case "Nivel": {
                                 personajes[indice].setNivel(personajes[indice].getNivel() + 1);
                                 flag = false;
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                                gameplay.append("Nivel aumentado (+1). --> ").append(personajes[indice].getNivel()).append(" <--");
+                                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
                                 break;
                             }
                             default:{
@@ -678,7 +744,10 @@ public class Batalla extends JPanel implements ActionListener {
             }
             else {
                 personajes[indice].setArmadura(personajes[indice].getArmadura() + 1);
-                JOptionPane.showMessageDialog(null, "Armadura aumentada.");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+                gameplay.append("Armadura aumentada (+1). --> ").append(personajes[indice].getArmadura()).append(" <--");
+                gameplay.append("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+                //JOptionPane.showMessageDialog(null, "Armadura aumentada.");
             }
         }
 
@@ -688,6 +757,7 @@ public class Batalla extends JPanel implements ActionListener {
             Personaje siguiente = siguientePersonaje(personajes2(arrCards2), personajes2(arrCards2)[indicePersonaje2]);
             if (siguiente == null){
                 insertarDatosTablaCartas();
+                guardarRegistroAtaque();
                 panel_Ganar = new Ganar(elf_m, elf_f, human_m, human_f, orc_m, orc_f);
                 add(scrollPane);
                 deshabilitarComponentes();
@@ -713,6 +783,7 @@ public class Batalla extends JPanel implements ActionListener {
             Personaje siguiente = siguientePersonaje(personajes1(arrCards1), personajes1(arrCards1)[indicePersonaje1]);
             if (siguiente == null){
                 insertarDatosTablaCartas();
+                guardarRegistroAtaque();
                 panel_Perder = new Perder();
                 add(scrollPane);
                 deshabilitarComponentes();
@@ -735,6 +806,9 @@ public class Batalla extends JPanel implements ActionListener {
             }
         }
         label_round.setText("ROUND - " + (round += 1) + " -");
+        gameplay.append("\n\n##################################################");
+        gameplay.append("ROUND - ").append(round += 1).append(" -");
+        gameplay.append("##################################################");
     }
 
     private String getHabilidadDesdeBoton(Object botonPresionado){
@@ -921,28 +995,57 @@ public class Batalla extends JPanel implements ActionListener {
         }
     }
 
+    private int obtenerIdJuego() {
+        int idJuegoUsuario = 1;
+        try {
+            Connection cn = Conexion.conectar();
+            PreparedStatement pst = cn.prepareStatement("select id_juego from usuarios where username = '" + LogIn.user + "'");
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                idJuegoUsuario = rs.getInt("id_juego");
+            }
+
+            cn.close();
+
+            int nuevoIdJuego = idJuegoUsuario + 1;
+
+            Connection cn2 = Conexion.conectar();
+            PreparedStatement pst2 = cn2.prepareStatement("update usuarios set id_juego = '" + nuevoIdJuego + "' where username = '" + LogIn.user + "'");
+
+            pst2.executeUpdate();
+
+            cn2.close();
+
+        } catch (SQLException exception) {
+            JOptionPane.showMessageDialog(null, "Error al buscar el id_juego en la tabla usuarios " + exception.getMessage());
+        }
+
+        return idJuegoUsuario;
+    }
     private void insertarDatosTablaCartas(){
         try {
             Connection cn = Conexion.conectar();
-            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?,?)");
+            PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?,?,?)");
             Date date = new Date();
             Timestamp timestamp = new Timestamp(date.getTime());
             //JOptionPane.showMessageDialog(null, "La fecha y la hora actual es: \n" + fechaHoraFormateada);
 
             pst.setInt(1,0);
-            pst.setString(2, String.valueOf(cartasJ1));
-            pst.setString(3, String.valueOf(cartasJ2));
-            pst.setTimestamp(4, timestamp);
-            pst.setString(5, user);
+            pst.setInt(2,obtenerIdJuego());
+            pst.setString(3, String.valueOf(cartasJ1));
+            pst.setString(4, String.valueOf(cartasJ2));
+            pst.setTimestamp(5, timestamp);
+            pst.setString(6, user);
 
             pst.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Datos registrados exitosamente.");
+            JOptionPane.showMessageDialog(null, "Datos de cartas registrados exitosamente.");
 
             cn.close();
         }
         catch (SQLException exception){
             JOptionPane.showMessageDialog(null, "Error al insertar los datos en la tabla cartas " + exception.getMessage());
-            System.err.println(exception);
         }
     }
 

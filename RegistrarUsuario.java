@@ -48,7 +48,7 @@ public class RegistrarUsuario extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(null, "Usuario con ese nombre ya registrado en la base de datos.");
                     }
                     else {
-                        PreparedStatement pst2 = cn.prepareStatement("insert into usuarios values (?,?,?)");
+                        PreparedStatement pst2 = cn.prepareStatement("insert into usuarios values (?,?,?,1)");
 
                         pst2.setInt(1,0);
                         pst2.setString(2,user);

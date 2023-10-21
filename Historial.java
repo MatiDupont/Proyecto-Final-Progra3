@@ -43,12 +43,14 @@ public class Historial extends JFrame implements ActionListener {
                 String cartasJ1 = rs.getString("cartasJ1");
                 String cartasJ2 = rs.getString("cartasJ2");
                 String fecha_hora = rs.getString("fecha_hora");
+                String usuario = rs.getString("usuario");
 
-                gameplay.append("---------------------------------------------------------------------------------\nEl dia ").append(fecha_hora).append(" se desarrolló el juego ").append(id_juego).append(".\n---------------------------------------------------------------------------------\n");
+                gameplay.append("---------------------------------------------------------------------------------\nEl dia ").append(fecha_hora).append(" ").append(usuario).append(" desarrolló el juego ").append(id_juego).append(".\n---------------------------------------------------------------------------------\n");
                 String infoJuego = "\n                 Se eligieron los siguientes personajes: \n" +
                             cartasJ1 + cartasJ2;
 
                 gameplay.append(infoJuego);
+
                 historialVacio = false;
             }
 
@@ -63,7 +65,7 @@ public class Historial extends JFrame implements ActionListener {
     private void incrementarContadorJuego() {
         try {
             Connection cn2 = Conexion.conectar();
-            PreparedStatement pst2 = cn2.prepareStatement("select max(id_juego) from cartas");
+            PreparedStatement pst2 = cn2.prepareStatement("select max(id_juego) from cartas where usuario = '" + LogIn.user + "'");
 
             ResultSet rs2 = pst2.executeQuery();
 

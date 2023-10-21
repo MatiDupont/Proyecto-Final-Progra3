@@ -36,7 +36,6 @@ public class Inicio extends JPanel implements ActionListener {
             definirPanel(panel_EleccionCartas);
         }
         if (e.getSource() == button_leer_log){
-            historial = new Historial();
             if (historial.isHistorialVacio()){
                 historial.getTextPane_resume().setText("Aun no hay registros de batallas.");
             }
@@ -110,6 +109,7 @@ public class Inicio extends JPanel implements ActionListener {
         label_footer.setForeground(Color.white);
         add(label_footer);
 
+        historial = new Historial();
         scrollPane = new JScrollPane();
         scrollPane.setBounds(0,0,1400,1400);
     }

@@ -146,7 +146,7 @@ public class Ganar extends JPanel implements ActionListener {
 
         panel_Inicio = new Inicio();
         scrollPane = new JScrollPane();
-        scrollPane.setBounds(-1,-1,1400,1400);
+        scrollPane.setBounds(0,0,1400,1400);
     }
 
     public void actionPerformed(ActionEvent e){

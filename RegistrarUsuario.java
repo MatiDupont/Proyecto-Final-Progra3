@@ -40,7 +40,7 @@ public class RegistrarUsuario extends JFrame implements ActionListener {
             if (!user.equals("") && (!pass.equals(""))){
                 try{
                     Connection cn = Conexion.conectar();
-                    PreparedStatement pst = cn.prepareStatement("select username from usuarios where username = '" + user + "'");
+                    PreparedStatement pst = cn.prepareStatement("select usuario from usuarios where usuario = '" + user + "'");
 
                     ResultSet rs = pst.executeQuery();
 

@@ -75,7 +75,7 @@ public class LogIn extends JPanel implements ActionListener {
             if ((!user.equals("")) && (!pass.equals(""))){
                 try {
                     Connection cn = Conexion.conectar();
-                    PreparedStatement pst = cn.prepareStatement("select username, password from usuarios where username = '" + user + "' and password = '" + pass + "'");
+                    PreparedStatement pst = cn.prepareStatement("select usuario, contraseña from usuarios where usuario = '" + user + "' and contraseña = '" + pass + "'");
 
                     ResultSet rs = pst.executeQuery();
 

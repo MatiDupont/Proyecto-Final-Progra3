@@ -34,7 +34,7 @@ public class Historial extends JFrame implements ActionListener {
         StringBuilder gameplay = new StringBuilder();
         try {
             Connection cn = Conexion.conectar();
-            PreparedStatement pst = cn.prepareStatement("select * from cartas where usuario = '" + LogIn.user + "' and id_juego >= '" + ultimoGame + "'");
+            PreparedStatement pst = cn.prepareStatement("select * from cartas where usuario = '" + LogIn.user + "' and id_juego >= '" + ultimoGame + "' and mostrar = '" + 1 + "'");
 
             ResultSet rs = pst.executeQuery();
 
@@ -45,11 +45,23 @@ public class Historial extends JFrame implements ActionListener {
                 String fecha_hora = rs.getString("fecha_hora");
                 String usuario = rs.getString("usuario");
 
-                gameplay.append("---------------------------------------------------------------------------------\nEl dia ").append(fecha_hora).append(" ").append(usuario).append(" desarrolló el juego ").append(id_juego).append(".\n---------------------------------------------------------------------------------\n");
+                gameplay.append("------------------------------------------------------------------------------------------------\nEl dia ").append(fecha_hora).append(" ").append(usuario).append(" desarrolló el juego ").append(id_juego).append(".\n------------------------------------------------------------------------------------------------\n");
                 String infoJuego = "\n                 Se eligieron los siguientes personajes: \n" +
                             cartasJ1 + cartasJ2;
 
                 gameplay.append(infoJuego);
+
+                Connection cn2 = Conexion.conectar();
+                PreparedStatement pst2 = cn2.prepareStatement("select datos_historial from batalla where id_juego = '" + id_juego + "'");
+
+                ResultSet rs2 = pst2.executeQuery();
+
+                if (rs2.next()) {
+                   String registroBatalla = rs2.getString("datos_historial");
+
+                   gameplay.append("~~~~~~~~~~~DESAROLLO DE LA BATALLA~~~~~~~~~~~").append(registroBatalla);
+                }
+                cn2.close();
 
                 historialVacio = false;
             }
@@ -134,6 +146,17 @@ public class Historial extends JFrame implements ActionListener {
             incrementarContadorJuego();
             getTextPane_resume().setText("");
             historialVacio = true;
+            try {
+                Connection cn = Conexion.conectar();
+                PreparedStatement pst = cn.prepareStatement("update cartas set mostrar = '" + 0 + "' where usuario = '" + LogIn.user + "'");
+
+                pst.executeUpdate();
+
+                cn.close();
+                JOptionPane.showMessageDialog(null, "Actualizacion del campo mostrar exitosamente.");
+            } catch (SQLException exception) {
+                JOptionPane.showMessageDialog(null, "Error al actualizar los datos del campo 'mostrar'" + exception.getMessage());
+            }
             JOptionPane.showMessageDialog(null, "Historial borrado exitosamente.");
         }
     }

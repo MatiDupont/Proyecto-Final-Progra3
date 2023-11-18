@@ -401,7 +401,7 @@ public class Batalla extends JPanel implements ActionListener {
 
     private void guardarRegistroAtaque() {
         try {
-            Connection cn = Conexion.conectar();
+            Connection cn = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst = cn.prepareStatement("insert into batalla values (?,?,?,?)");
 
             pst.setInt(1,0);
@@ -1077,7 +1077,7 @@ public class Batalla extends JPanel implements ActionListener {
     private int incrementarContadorJuego() {
         int idJuegoUsuario = 1;
         try {
-            Connection cn = Conexion.conectar();
+            Connection cn = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst = cn.prepareStatement("select id_juego from usuarios where usuario = '" + LogIn.user + "'");
 
             ResultSet rs = pst.executeQuery();
@@ -1090,7 +1090,7 @@ public class Batalla extends JPanel implements ActionListener {
 
             int nuevoIdJuego = idJuegoUsuario + 1;
 
-            Connection cn2 = Conexion.conectar();
+            Connection cn2 = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst2 = cn2.prepareStatement("update usuarios set id_juego = '" + nuevoIdJuego + "' where usuario = '" + LogIn.user + "'");
 
             pst2.executeUpdate();
@@ -1105,7 +1105,7 @@ public class Batalla extends JPanel implements ActionListener {
     }
     private void insertarDatosTablaCartas(){
         try {
-            Connection cn = Conexion.conectar();
+            Connection cn = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst = cn.prepareStatement("insert into cartas values (?,?,?,?,?,?,true)");
             Date date = new Date();
             Timestamp timestamp = new Timestamp(date.getTime());
@@ -1131,7 +1131,7 @@ public class Batalla extends JPanel implements ActionListener {
     private int obtenerIdJuegoActual() {
         int idJuegoUsuario = 1;
         try {
-            Connection cn = Conexion.conectar();
+            Connection cn = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst = cn.prepareStatement("select id_juego from usuarios where usuario = '" + LogIn.user + "'");
 
             ResultSet rs = pst.executeQuery();

@@ -6,13 +6,15 @@ import java.io.FileReader;
 import java.sql.*;
 
 public class EjecucionScript {
-    public static void CrearTablas() {
-        String scriptPath = "C:\\Users\\Usuario\\Documents\\Matias\\PROGRA3 2023\\Proyecto Final\\script.sql";
+
+    public static boolean CrearTablas(String directionIP, String routeMYSQL, String user_ddbb, String pass_ddbb) {
+
+        String scriptPath = "..\\Proyecto Final\\script.sql";
 
         StringBuilder query = new StringBuilder();
 
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost", "root", "");
+            Connection connection = DriverManager.getConnection("jdbc:mysql://" + directionIP + ":" + routeMYSQL, user_ddbb, pass_ddbb);
             Statement statement = connection.createStatement();
 
             BufferedReader br = new BufferedReader(new FileReader(scriptPath));
@@ -30,9 +32,12 @@ public class EjecucionScript {
             br.close();
             statement.close();
             connection.close();
+
+            return true;
         } catch (Exception exception) {
             JOptionPane.showMessageDialog(null, "Error al ejecutar las instrucciones del script: " + exception.getMessage());
             exception.printStackTrace();
+            return false;
         }
     }
 }

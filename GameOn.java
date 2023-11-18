@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class GameOn extends JPanel implements ActionListener {
     private JLabel label_titulo, label_footer;
-    private JButton button_start;
+    private JButton button_start, button_loadData;
     private BufferedImage backgroundImage;
     private LogIn panel_LogIn;
     private JScrollPane scrollPane;
@@ -56,12 +56,21 @@ public class GameOn extends JPanel implements ActionListener {
         add(label_titulo);
 
         button_start = new JButton("Comenzar");
-        button_start.setBounds(1080,560,110,30);
+        button_start.setBounds(1080,560,150,30);
         button_start.setBackground(Color.white);
         button_start.setForeground(new Color(0,0,0));
         button_start.setFont(new Font("Calibri",1,18));
         button_start.addActionListener(this);
+        button_start.setEnabled(false);
         add(button_start);
+
+        button_loadData = new JButton("Cargar datos");
+        button_loadData.setBounds(900,560,150,30);
+        button_loadData.setBackground(Color.white);
+        button_loadData.setForeground(Color.BLACK);
+        button_loadData.setFont(new Font("Calibri",1,18));
+        button_loadData.addActionListener(this);
+        add(button_loadData);
 
         label_footer = new JLabel("Creado por Matias Dupont ©");
         label_footer.setBounds(580,610,210,20);
@@ -75,17 +84,30 @@ public class GameOn extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        VentanaEmergente ventanaEmergente = new VentanaEmergente(this);
         if (e.getSource() == button_start){
             add(scrollPane);
             label_titulo.setVisible(false);
+            button_loadData.setVisible(false);
             button_start.setVisible(false);
             label_footer.setVisible(false);
             definirPanel(panel_LogIn);
             panel_LogIn.getTextField_usuario().requestFocus();
         }
+        if (e.getSource() == button_loadData) {
+            ventanaEmergente.setVisible(true);
+        }
     }
 
     private void definirPanel(LogIn panel){
         scrollPane.setViewportView(panel);
+    }
+
+    public JButton getButton_start() {
+        return button_start;
+    }
+
+    public JButton getButton_loadData() {
+        return button_loadData;
     }
 }

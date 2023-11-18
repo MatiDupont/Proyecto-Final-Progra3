@@ -8,6 +8,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import creacionBBDD.EjecucionScript;
 
 public class VentanaPrincipal extends JFrame implements ActionListener {
     private GameOn panel_OnGame;

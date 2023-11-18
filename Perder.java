@@ -67,9 +67,4 @@ public class Perder extends JPanel implements ActionListener {
     private void definirPanel(Inicio panel) {
         scrollPane.setViewportView(panel);
     }
-
-    public static void main(String[] args) {
-        new Perder().setVisible(true);
-    }
-
 }

@@ -33,7 +33,7 @@ public class Historial extends JFrame implements ActionListener {
     public String imprimirDatosTabla() {
         StringBuilder gameplay = new StringBuilder();
         try {
-            Connection cn = Conexion.conectar();
+            Connection cn = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst = cn.prepareStatement("select * from cartas where usuario = '" + LogIn.user + "' and id_juego >= '" + ultimoGame + "' and mostrar = '" + 1 + "'");
 
             ResultSet rs = pst.executeQuery();
@@ -51,7 +51,7 @@ public class Historial extends JFrame implements ActionListener {
 
                 gameplay.append(infoJuego);
 
-                Connection cn2 = Conexion.conectar();
+                Connection cn2 = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
                 PreparedStatement pst2 = cn2.prepareStatement("select datos_historial from batalla where id_juego = '" + id_juego + "'");
 
                 ResultSet rs2 = pst2.executeQuery();
@@ -76,7 +76,7 @@ public class Historial extends JFrame implements ActionListener {
 
     private void incrementarContadorJuego() {
         try {
-            Connection cn2 = Conexion.conectar();
+            Connection cn2 = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
             PreparedStatement pst2 = cn2.prepareStatement("select max(id_juego) from cartas where usuario = '" + LogIn.user + "'");
 
             ResultSet rs2 = pst2.executeQuery();
@@ -147,7 +147,7 @@ public class Historial extends JFrame implements ActionListener {
             getTextPane_resume().setText("");
             historialVacio = true;
             try {
-                Connection cn = Conexion.conectar();
+                Connection cn = Conexion.conectar(VentanaEmergente.directionIP_ddbb, VentanaEmergente.routeMYSQL_ddbb, VentanaEmergente.user_ddbb, VentanaEmergente.pass_ddbb);
                 PreparedStatement pst = cn.prepareStatement("update cartas set mostrar = '" + 0 + "' where usuario = '" + LogIn.user + "'");
 
                 pst.executeUpdate();
